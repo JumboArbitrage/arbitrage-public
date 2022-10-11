@@ -72,7 +72,7 @@
    go run listener.go Decodetxdata.go func1.go func2.go utils.go
    ```
 
-### **[gelato-uniswap](https://github.com/gelatodigital/gelato-uniswap) or [gelato-network](https://github.com/gelatodigital/gelato-network)👇**
+### **[gelato-uniswap](https://github.com/gelatodigital/gelato-uniswap) or [gelato-network](https://github.com/gelatodigital/gelato-network)**
 
 - Through it, you can use the **Gelato Network** to build an automated dapp. 
 
