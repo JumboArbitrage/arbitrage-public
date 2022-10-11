@@ -1,6 +1,8 @@
 # **arbitrage-repo-for-public**
 
-> **✨ This is a rudimentary version of an eth arbitrage repository. The advanced version is under development and is a private repository. We will regularly update the relevant content of the public warehouse, so stay tuned!**
+> **✨ This is a rudimentary version of an eth arbitrage repository. The advanced version is under development and is a private repository. We will regularly update the relevant content of the public warehouse, so stay tuned!**
+> 
+> **✨ For more information, please visit the [Wiki](https://github.com/JumboArbitrage/arbitrage-public/wiki/).**
 
 ## **Commit Rules:**
 
