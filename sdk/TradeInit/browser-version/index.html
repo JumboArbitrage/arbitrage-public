@@ -1,0 +1,63 @@
+<html>
+  <head>
+    <link rel="shortcut icon" href="#">
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="./css/StylePlus.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- <script src="./js/script.js"></script> -->
+  </head>
+  <body>
+    <h1>🦄 Hello there!  Welcome to the transaction! 🦄</h1>
+    <h2>🤢 This is used to sent bills in the rinkeby network 🤢</h2>
+    <script src = "https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script type = "text/javascript" src = "ABI/SwapRouter02ABI.json"></script>
+    <script type = "text/javascript" src = "ABI/UniswapV2FactoryABI.json"></script>
+    <script type = "text/javascript" src = "ABI/UniswapV2Router02ABI.json"></script>
+    <script type = "text/javascript" src = "ABI/UniABI.json"></script>
+    <script type = "text/javascript" src = "ABI/WETH9ABI.json"></script>
+    <script type = "text/javascript" src = "ABI/UniswapV2PairABI.json"></script>
+    <script type = "text/javascript" src = "ABI/WZGLTokenABI.json"></script>
+    <script type = "text/javascript" src = "ABI/TokenERC20ForTestABI.json"></script>
+    <script type = "text/javascript" src = "ABI/DaiABI.json"></script>
+    <script type = "text/javascript" src = "js/bignumber.js"></script>
+    <script type = "text/javascript" src = "config/key.txt"></script>
+    <script src="https://cdn.jsdelivr.net/gh/ethereumjs/browser-builds/dist/ethereumjs-tx/ethereumjs-tx-1.3.3.min.js"></script>
+    <script>
+      console.log('typeof ethereumjs:',               (typeof ethereumjs))
+      console.log('Object.keys(ethereumjs):',         Object.keys(ethereumjs))
+      console.log('typeof ethereumjs.Tx:',            (typeof ethereumjs.Tx))
+      console.log('typeof ethereumjs.RLP:',           (typeof ethereumjs.RLP))
+      console.log('typeof ethereumjs.Util:',          (typeof ethereumjs.Util))
+      console.log('typeof ethereumjs.Buffer:',        (typeof ethereumjs.Buffer))
+      console.log('typeof ethereumjs.Buffer.Buffer:', (typeof ethereumjs.Buffer.Buffer))
+      // {
+      //   let privateKey = new ethereumjs.Buffer.Buffer('a8d57bf57321ebe97dc50ba2fe6074b4a7958fcd7de52e3408c5def0797ee1c5', 'hex')
+      //   let txParams = {
+      //     nonce:    '0x00',
+      //     gasPrice: '0x09184e72a000', 
+      //     gasLimit: '0x2710',
+      //     to:       '0x0000000000000000000000000000000000000000', 
+      //     value:    '0x00', 
+      //     data:     '0x7f7465737432000000000000000000000000000000000000000000000000000000600057'
+      //   }
+      //   let tx = new ethereumjs.Tx(txParams)
+      //   tx.sign(privateKey)
+      //   let serializedTx = tx.serialize().toString('hex')
+      //   console.log('serializedTx:', serializedTx)
+      // }
+    </script>
+    <!-- <script src = "https://cdn.ethers.io/scripts/ethers-v4.min.js" charset = "utf-8" type = "text/javascript"></script> -->
+    <script type = "text/javascript"
+        integrity = "sha384-qU3nvpskWirnJuSLmQWFfAFKbiN5+JKbAEEoTOcPYJu3s1xCe66b66sUER3x5wVF"
+        crossorigin = "anonymous"
+        src = "https://cdn-cors.ethers.io/lib/ethers-5.6.9.umd.min.js">
+    </script>
+    <script src = "./js/main.js" defer></script>
+    <!-- <script src = "//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> -->
+    <!-- <script src = "http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>     -->
+    <!-- <script type= "module">
+      import {abi} from './ABI/WZGLTokenABI.json'
+      console.log(abi)
+    </script> -->
+  </body>
+</html>
