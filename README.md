@@ -46,7 +46,7 @@
 
 #### ✅ **ArbitrageProject**
 
-1. **back-end:**
+1. **Back-end:**
    
    It is to accept client requests for arbitrage work. 
    
@@ -60,7 +60,7 @@
    node ./app.js
    ```
 
-2. **client:**
+2. **Client:**
    
    It is to retrieve unpackaged trades from the txpool is defined here, and then request the backend for arbitrage work.
    
