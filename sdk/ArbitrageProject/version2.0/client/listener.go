@@ -23,23 +23,27 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-const (
-	url = "https://eth-rinkeby.alchemyapi.io/v2/PeWdDU96WNZQaIuLFLD_X8wInQ3iKWQf"
-	wss = "wss://eth-rinkeby.alchemyapi.io/v2/PeWdDU96WNZQaIuLFLD_X8wInQ3iKWQf"
-)
-
 func watch() {
 	logFile, err := os.OpenFile("./clientlog.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		log.Printf("failed to open log file: %v", err)
+		return
+	}
 	log.SetOutput(logFile)
 	log.SetFlags(log.Llongfile | log.Lmicroseconds | log.Ldate)
+	config := LoadRuntimeConfig()
+	if err := config.ValidateLive(); err != nil {
+		log.Printf("listener not started: %v", err)
+		return
+	}
 	flagofs3 := 0 //和第三笔策略有关
-	backend, err := ethclient.Dial(url)
+	backend, err := ethclient.Dial(config.RPCHTTPURL)
 	if err != nil {
 		log.Printf("failed to dial: %v", err)
 		return
 	}
 
-	rpcCli, err := rpc.Dial(wss)
+	rpcCli, err := rpc.Dial(config.RPCWSURL)
 	if err != nil {
 		log.Printf("failed to dial: %v", err)
 		return
@@ -85,7 +89,7 @@ A_BLOCK:
 		return p == 1
 	}) // sort txData by Gasprice
 	//FOR_STR3:
-	function := 2 //设置选择哪种策略,目前还是需要手工设置
+	function := config.Strategy //设置选择哪种策略,默认还是原来的策略2
 	// if len(txData) != 1 && function == 3 {
 	// 	log.Println("len of txdata:", len(txData))
 	// 	goto NEXT_BLOCK
@@ -111,7 +115,7 @@ A_BLOCK:
 				postData.Add("Gasprice", GP)
 				postData.Add("InOrOut", "false")
 				log.Printf("true")
-				resp, err := http.Post("http://localhost:8081/arbitrage", "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
+				resp, err := http.Post(config.BackendURL, "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
 				if err != nil {
 					log.Println(err)
 				}
@@ -129,7 +133,7 @@ A_BLOCK:
 				//log.Println(BigIntToFloat(Abit.Gasprice).Text('f', len(p3)+int(math.Abs(float64(nump2)))))
 				postData.Add("Gasprice", GP)
 				postData.Add("InOrOut", "true")
-				resp, err := http.Post("http://localhost:8081/arbitrage", "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
+				resp, err := http.Post(config.BackendURL, "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
 				if err != nil {
 					log.Println(err)
 				}
@@ -167,7 +171,7 @@ A_BLOCK:
 				postData.Add("Gasprice", GP)
 				postData.Add("InOrOut", "true")
 				//	log.Printf("true")
-				resp, err := http.Post("http://localhost:8081/arbitrage", "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
+				resp, err := http.Post(config.BackendURL, "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
 				if err != nil {
 					log.Println(err)
 				}
@@ -187,7 +191,7 @@ A_BLOCK:
 				postData.Add("Gasprice", GP)
 				postData.Add("InOrOut", "false")
 				log.Printf("true")
-				resp, err := http.Post("http://localhost:8081/arbitrage", "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
+				resp, err := http.Post(config.BackendURL, "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
 				if err != nil {
 					log.Println(err)
 				}
@@ -228,7 +232,7 @@ A_BLOCK:
 				postData := ur.Values{}
 				postData.Add("Gasprice", Gasstring)
 				postData.Add("InOrOut", "true")
-				resp, err := http.Post("http://localhost:8081/arbitrage", "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
+				resp, err := http.Post(config.BackendURL, "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
 				if err != nil {
 					log.Println(err)
 				}
@@ -261,7 +265,7 @@ A_BLOCK:
 				log.Println("Butout")
 				postData.Add("Gasprice", Gasstring)
 				postData.Add("InOrOut", "false")
-				resp, err := http.Post("http://localhost:8081/arbitrage", "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
+				resp, err := http.Post(config.BackendURL, "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
 				if err != nil {
 					log.Println(err)
 				}

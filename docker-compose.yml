@@ -1,0 +1,74 @@
+services:
+  shell:
+    build: .
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+      - npm-cache:/root/.npm
+      - go-cache:/go/pkg/mod
+      - dependency-cache:/deps
+      - go-build-cache:/go-build
+    env_file:
+      - .env.example
+    environment:
+      ARBITRAGE_ISOLATED: "1"
+      LIVE_TRADING: "0"
+      NODE_ENV: development
+      PATH: /usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    command: bash
+
+  test:
+    build: .
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+      - npm-cache:/root/.npm
+      - go-cache:/go/pkg/mod
+      - dependency-cache:/deps
+      - go-build-cache:/go-build
+    env_file:
+      - .env.example
+    environment:
+      ARBITRAGE_ISOLATED: "1"
+      LIVE_TRADING: "0"
+      NODE_ENV: test
+      PATH: /usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    command: bash -c "npm test"
+
+  live-backend:
+    profiles: ["live"]
+    build: .
+    working_dir: /workspace/sdk/ArbitrageProject/version2.0/back-end/express-backend
+    volumes:
+      - .:/workspace
+      - npm-cache:/root/.npm
+      - dependency-cache:/deps
+    env_file:
+      - .env
+    environment:
+      ARBITRAGE_ISOLATED: "1"
+      LIVE_TRADING: "1"
+      PATH: /usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    command: bash -c "mkdir -p /deps/express-backend && cp package.json /deps/express-backend/package.json && npm --prefix /deps/express-backend install --package-lock=false && NODE_PATH=/deps/express-backend/node_modules node app.js"
+
+  live-client:
+    profiles: ["live"]
+    build: .
+    working_dir: /workspace/sdk/ArbitrageProject/version2.0/client
+    volumes:
+      - .:/workspace
+      - go-cache:/go/pkg/mod
+      - go-build-cache:/go-build
+    env_file:
+      - .env
+    environment:
+      ARBITRAGE_ISOLATED: "1"
+      LIVE_TRADING: "1"
+      PATH: /usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    command: bash -c "GOCACHE=/go-build GOMODCACHE=/go/pkg/mod go mod download && GOCACHE=/go-build GOMODCACHE=/go/pkg/mod go run listener.go Decodetxdata.go func1.go func2.go utils.go config.go"
+
+volumes:
+  npm-cache:
+  go-cache:
+  go-build-cache:
+  dependency-cache:

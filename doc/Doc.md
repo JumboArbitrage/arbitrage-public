@@ -1,70 +1,95 @@
-# 1. Guidelines:
+# Project Notes
 
-## 1. SDK
+## Purpose
 
-### 1. TradeInit
+This SDK is an Ethereum arbitrage prototype. It has two main parts:
 
-#### 1.1 browser version:
+- `TradeInit`: legacy scripts that create test swap traffic.
+- `ArbitrageProject`: a Go listener that watches pending transactions and an
+  Express backend that prepares arbitrage swaps.
 
-- Download [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb), copy the local project and run it as its notes.
+The current safe default is dry-run. Dry-run builds a redacted execution plan and
+does not sign or submit transactions.
 
-- Or all you need to do is use a local web server. Popular choices include:
-  
-  - Live Server, a VS Code extension that adds a right-click option to run your pages with a local server.
-  - Node static server, a simple http server to serve static resource files from a local directory.
-  - Node live server is easy to install and use:
-  
-  ```shell
-  npm install -g live-server // Install globally via npmlive-server                // Run in the html's directory
-  ```
+## Environment
 
-- Then you can run and debug your code on Chrome! (F12)
+Use Docker Compose for a unified isolated Node + Go environment:
 
-- The first function lets you modify your code on the web IDE, while on the other hand, you can modify the code locally or on the web IDE.
-
-#### 1.2 local version:
-
-How to run:
-
-```shell
-npm install -g cnpm --registry=https://registry.npm.taobao.orgcnpm inode ./js/main.js --testBuyCount=a --ethBuyCount=b --testSellCount=c --ethSellCount=d
-# OR: any other js script in the same folder
-# a, b, c, and d are the numbers you define yourself
+```sh
+docker compose build
+docker compose run --rm shell
+docker compose run --rm test
 ```
 
-### 2. ArbitrageProject (version 2.0)
+Do not install global `cnpm` or project dependencies on the host unless you
+explicitly want a non-isolated local setup.
 
-#### 2.1 back-end:
+The default test command is intentionally guarded. `npm test` should be run by
+Docker Compose, which sets `ARBITRAGE_ISOLATED=1`:
 
-- It is to accept client requests for arbitrage work.
-- It is recommended to use express-backend (since the version with the nest framework has not yet been completed), developed using the express framework of node.js.
-- How to run:
-
-```shell
-npm install -g cnpm --registry = https://registry.npm.taobao.orgcnpm inode ./app.js
+```sh
+docker compose run --rm test
 ```
 
-#### 2.2 client:
+Generated dependency state is kept in Docker volumes, not in the repository
+workspace. The temporary package lock used for audit lives under
+`/deps/express-backend` inside a Docker volume. To verify the repo after a run:
 
-- It is to retrieve unpackage trades from the txpool which is defined here, and then request the backend for arbitrage work.
-- How to run:
-
-```shell
-go mod initgo mod tidygo run listener.go Decodetxdata.go func1.go func2.go utils.go
+```sh
+find . -name node_modules -type d -prune -print
+find . -name package-lock.json -type f -print
+find . -name .cache -type d -prune -print
 ```
 
-## 2. [gelato-uniswap](https://github.com/gelatodigital/gelato-uniswap) / [gelato-network](https://github.com/gelatodigital/gelato-network)
+These commands should print nothing.
 
-- Through it, you can use the Gelato Network to build an automated dapp.
-- In this example, the dapp enables users to automatically swap DAI for ETH on Uniswap every 2 minutes using Gelato.
-- You can think of it as a Dollar Cost Averaging Dapp built on Uniswap.
+## Dry-Run Backend
 
-## 3. Uniswap sdk
+Run the backend from `docker compose run --rm shell` if you need manual dry-run
+testing. Avoid `npm install` in the mounted backend directory; install into the
+Docker dependency volume instead:
 
-(to be updated...)
+```sh
+cd sdk/ArbitrageProject/version2.0/back-end/express-backend
+rm -rf /deps/express-backend
+mkdir -p /deps/express-backend
+cp package.json /deps/express-backend/package.json
+npm --prefix /deps/express-backend install
+NODE_PATH=/deps/express-backend/node_modules node app.js
+```
 
-# 2. Commit Rules:
+```sh
+curl -X POST http://localhost:8081/arbitrage \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'Gasprice=0.000000001&InOrOut=true'
+```
 
-- First, create a new branch from dev and push this branch to the repository.
-- After your part of work, merge your temporary branch to dev (you can certainly create merge requests).
-- The released version is on the main branch.
+Expected behavior: the response says `mode: dry-run` and `submitted: false`.
+
+## Live Mode
+
+Live mode requires `.env` and the Compose `live` profile:
+
+```sh
+cp .env.example .env
+# Fill in RPC_HTTP_URL, RPC_WS_URL, account addresses, contract addresses,
+# PRIVATE_KEY_1, and PRIVATE_KEY_2.
+docker compose --profile live up live-backend live-client
+```
+
+Rinkeby was the original target network in the historical code. Rinkeby is now a
+legacy testnet, so live use requires current RPC endpoints and contract
+addresses supplied by the user.
+
+## Tests
+
+```sh
+docker compose run --rm test
+```
+
+The test suite checks that:
+
+- no obvious provider keys or private key values are committed;
+- active Express production dependencies pass `npm audit`;
+- the Express backend returns a dry-run plan without submitting a transaction;
+- the Go decoder and strategy logic behave deterministically on fixtures.

@@ -58,6 +58,8 @@ scripts/request-pr-review.js
 scripts/*.js.map
 scripts/typings/
 coverage/
+.cache/
+**/.cache/
 internal/
 **/.DS_Store
 .settings
@@ -202,3 +204,8 @@ fabric.properties
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
 *.log
+.env
+.env.*
+!.env.example
+sdk/TradeInit/loal-version/config/address.json
+sdk/TradeInit/loal-version/config/privateKey.json

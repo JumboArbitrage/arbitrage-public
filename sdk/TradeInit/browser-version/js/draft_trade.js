@@ -10,7 +10,7 @@ const config = require('../config');
 const BigNumber = require("bignumber.js");
 const Tx = require('ethereumjs-tx');
 const util = require('../util/util');
-const web3 = new Web3('https://rinkeby.infura.io/v3/45192e3bb296499a93ef0a73c0eb159a');
+const web3 = new Web3(process.env.RPC_HTTP_URL || '');
 
 
 //母账号转账
@@ -243,6 +243,10 @@ async function transactionETH(fromAddress,amount,toAddress,pKey){
 
 
 async function sendSigned(txData, pKey) {
+  if (process.env.LIVE_TRADING !== '1') {
+    console.log('dry-run: transaction not submitted');
+    return 'dry-run';
+  }
     //签名函数
     let privateKeys = Buffer.from(pKey,'hex');
     let transaction = new Tx.Transaction(txData,{chain: 'rinkeby'});

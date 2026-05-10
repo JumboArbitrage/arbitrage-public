@@ -625,12 +625,17 @@
 
 
   async function sendSigned(Data) {
+    const liveTrading = typeof process !== 'undefined' && process.env && process.env.LIVE_TRADING === '1';
+    if (!liveTrading) {
+      console.log('dry-run: transaction not submitted');
+      return 'dry-run';
+    }
     // 签名函数
     let privateKeys = ethereumjs.Buffer.Buffer(PRIVATE_KEY, 'hex');
     let thisTransaction = new ethereumjs.Tx(Data, {chain: 'rinkeby'}); // let tx = new ethereumjs.Tx(txParams)
     thisTransaction.sign(privateKeys);
     let serializedTx = thisTransaction.serialize().toString('hex');
-    console.log('serializedTx:', serializedTx);
+    console.log('serializedTx: [redacted]');
     return new Promise(function (resolve, reject) {
       // sendSignedTransaction：一旦我们有一个签名的交易，我们可以通过使用将其发送到后续块中
       //获取的原始私钥如果含有 ‘0x’ 会出现类型长度的错误

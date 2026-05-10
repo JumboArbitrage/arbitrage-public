@@ -1,3 +1,3 @@
 cd ../ArbitrageProject/version2.0/client
 #go mod tidy
-go run listener.go Decodetxdata.go func1.go func2.go utils.go
+go run listener.go Decodetxdata.go func1.go func2.go utils.go config.go

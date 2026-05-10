@@ -17,7 +17,6 @@ const infuraUrl = CONFIG.url;
 const web3  = new Web3(infuraUrl);
 /* the account address & key: */
 // const from = "0x4bfeb3440b35051BB2ba0c1226bbdcB54d3f5D1B";
-// const PRIVATE_KEY = 'a8d57bf57321ebe97dc50ba2fe6074b4a7958fcd7de52e3408c5def0797ee1c5';
 let metamaskAccounts = new Array();
 let keysForAccounts = new Array();
 // mas:<17
@@ -147,12 +146,16 @@ for (n = 0; n < metamaskAccounts.length; n++) {
 })(); 
 
 async function sendSigned(Data, PRIVATE_KEY) {
+  if (process.env.LIVE_TRADING !== '1') {
+    console.log('dry-run: transaction not submitted');
+    return 'dry-run';
+  }
   // 签名函数
   let privateKeys = Buffer.from(PRIVATE_KEY, 'hex');
   let thisTransaction = new Tx(Data, {chain: 'rinkeby'}); // let tx = new ethereumjs.Tx(txParams)
   thisTransaction.sign(privateKeys);
   let serializedTx = thisTransaction.serialize().toString('hex');
-  console.log('serializedTx:\n', serializedTx);
+  console.log('serializedTx: [redacted]');
   return new Promise(function (resolve, reject) {
     // sendSignedTransaction：一旦我们有一个签名的交易，我们可以通过使用将其发送到后续块中
     //获取的原始私钥如果含有 ‘0x’ 会出现类型长度的错误

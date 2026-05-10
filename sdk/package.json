@@ -1,7 +1,8 @@
 {
-  "dependencies": {
-    "dotenv": "^16.0.1",
-    "ethereumjs-tx": "^2.1.2",
-    "web3": "^1.7.4"
+  "name": "arbitrage-public-legacy-sdk",
+  "private": true,
+  "description": "Archived SDK workspace. Dependencies are intentionally not installed here; use the Docker Compose root test entrypoint.",
+  "scripts": {
+    "test": "echo \"Archived SDK workspace: use docker compose run --rm test from the repo root.\" && exit 0"
   }
 }
