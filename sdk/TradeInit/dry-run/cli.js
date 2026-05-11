@@ -8,6 +8,26 @@ const fixturePath = path.join(__dirname, "legacy-fixtures.json");
 const addressPattern = /^0x[a-fA-F0-9]{40}$/;
 const integerPattern = /^(0|[1-9][0-9]*)$/;
 const decimalPattern = /^(0|[1-9][0-9]*)(\.[0-9]+)?$/;
+const allowedOptions = new Set([
+  "fixture",
+  "account-start",
+  "account-end-exclusive",
+  "direction-mode",
+  "gas-prices",
+  "chain-id",
+  "chain-name",
+  "router-contract",
+  "test-token-contract",
+  "weth-contract",
+  "test-amount",
+  "eth-amount",
+]);
+const explicitShapeOptions = new Set([
+  "account-start",
+  "account-end-exclusive",
+  "direction-mode",
+  "gas-prices",
+]);
 
 function loadFixtures() {
   return JSON.parse(fs.readFileSync(fixturePath, "utf8"));
@@ -25,6 +45,9 @@ function parseArgs(argv) {
     const key = token.slice(2);
     if (key === "live") {
       throw new Error("TradeInit dry-run CLI does not support live mode");
+    }
+    if (!allowedOptions.has(key)) {
+      throw new Error(`unknown option --${key}`);
     }
     const value = tokens[i + 1];
     if (!value || value.startsWith("--")) {
@@ -52,7 +75,7 @@ function assertPositiveInteger(value, name) {
 }
 
 function assertPositiveDecimal(value, name) {
-  if (!decimalPattern.test(value) || Number(value) <= 0) {
+  if (!decimalPattern.test(value) || /^0+(\.0+)?$/.test(value)) {
     throw new Error(`${name} must be a positive decimal`);
   }
   return value;
@@ -83,6 +106,10 @@ function directionFor(mode, index, total) {
 
 function shapeFromOptions(options, fixtures) {
   if (options.fixture) {
+    const mixedOption = [...explicitShapeOptions].find((name) => Object.hasOwn(options, name));
+    if (mixedOption) {
+      throw new Error(`--fixture cannot be combined with --${mixedOption}`);
+    }
     const fixture = fixtures[options.fixture];
     if (!fixture) {
       throw new Error(`unknown fixture: ${options.fixture}`);
@@ -95,6 +122,10 @@ function shapeFromOptions(options, fixtures) {
       directionMode: fixture.directionMode,
       gasPricesWei: fixture.gasPricesWei,
     };
+  }
+
+  for (const name of explicitShapeOptions) {
+    requireOption(options, name);
   }
 
   const gasPricesWei = requireOption(options, "gas-prices")

@@ -37,6 +37,16 @@ function assertPlanSafety(plan) {
   assert.doesNotMatch(serialized, /signed/i);
 }
 
+function assertBuildFails(options, pattern) {
+  assert.throws(() => buildPlan(options, fixtures), pattern);
+}
+
+function assertCliFails(args, pattern) {
+  const result = spawnSync("node", [cliPath, ...args], { encoding: "utf8" });
+  assert.notStrictEqual(result.status, 0);
+  assert.match(result.stderr, pattern);
+}
+
 const fixtures = loadFixtures();
 
 const main0 = buildPlan(optionsWithFixture("main_0"), fixtures);
@@ -107,6 +117,30 @@ assert.deepStrictEqual(directions(cliPlan), ["buy", "buy", "buy", "sell"]);
 const liveAttempt = spawnSync("node", [cliPath, "live"], { encoding: "utf8" });
 assert.notStrictEqual(liveAttempt.status, 0);
 assert.match(liveAttempt.stderr, /dry-run/);
+assertCliFails(["dry-run", "--fixture", "main_0", "--unknown", "1"], /unknown option/);
+assertCliFails(["dry-run", "--fixture", "main_0", "--live"], /live mode/);
+
+assertBuildFails({ ...baseOptions, fixture: "main_0", "gas-prices": "1,2,3" }, /cannot be combined/);
+assertBuildFails({ ...baseOptions, "account-start": "1", "direction-mode": "all-buy", "gas-prices": "1" }, /account-end-exclusive/);
+assertBuildFails({
+  ...baseOptions,
+  "account-start": "1",
+  "account-end-exclusive": "2",
+  "direction-mode": "sideways",
+  "gas-prices": "1",
+}, /unsupported direction mode/);
+assertBuildFails({
+  ...baseOptions,
+  "account-start": "1",
+  "account-end-exclusive": "2",
+  "direction-mode": "all-buy",
+  "gas-prices": "0",
+}, /gas price/);
+
+for (const value of ["0", "0.0", "-1", "1e3", "Infinity", ".", "1.", ".1"]) {
+  assertBuildFails({ ...optionsWithFixture("main_0"), "eth-amount": value }, /eth amount/);
+}
+assertBuildFails({ ...optionsWithFixture("main_0"), "eth-amount": "" }, /eth-amount/);
 
 const cliSource = fs.readFileSync(cliPath, "utf8");
 assert.doesNotMatch(cliSource, /web3/i);
