@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/ethclient/gethclient"
 	"github.com/ethereum/go-ethereum/rpc"
@@ -52,28 +53,15 @@ NEXT_BLOCK:
 		return
 	}
 
-	var txData Datas
-	timeout := time.After(time.Second * 3) //设置为七秒后停止获取交易
-	for {
-		select {
-		case txhash := <-txch:
-			//log.Println("start")
-			tx, _, err := backend.TransactionByHash(context.Background(), txhash)
-			if err != nil {
-				continue
-			}
-			txData = txData.Decodetxdata(tx)
-			// if len(txData) == 1 {
-			// 	log.Println("Let's run Strategy3")
-			// 	goto FOR_STR3
-			// }
-			//log.Println("end")
-		case <-timeout:
-			goto A_BLOCK
-		}
-
-	}
-A_BLOCK:
+	txData := collectPendingWindow(
+		context.Background(),
+		txch,
+		func(ctx context.Context, txhash common.Hash) (*types.Transaction, error) {
+			tx, _, err := backend.TransactionByHash(ctx, txhash)
+			return tx, err
+		},
+		time.Second*3, //设置为七秒后停止获取交易
+	)
 	if len(txData) == 0 {
 		log.Printf("no transaction")
 		//		time.Sleep(time.Second * 10)
