@@ -61,6 +61,20 @@ assert.deepStrictEqual(
 assert.strictEqual(main0.summary.buy, 15);
 assert.strictEqual(main0.summary.sell, 0);
 
+const main1 = buildPlan(optionsWithFixture("main_1"), fixtures);
+assertPlanSafety(main1);
+assert.strictEqual(main1.legacyFile, "sdk/TradeInit/loal-version/js/main_1.js");
+assert.deepStrictEqual(main1.accountRange, { start: 4, endExclusive: 8 });
+assert.deepStrictEqual(directions(main1), Array(4).fill("buy"));
+assert.deepStrictEqual(
+  main1.trades.slice(0, 3).map((trade) => trade.gasPriceWei),
+  ["1000001000", "1002005000", "1012003000"],
+);
+assert.strictEqual(main1.trades[0].legacyAccountIndex, 4);
+assert.strictEqual(main1.trades[3].legacyAccountIndex, 7);
+assert.strictEqual(main1.summary.buy, 4);
+assert.strictEqual(main1.summary.sell, 0);
+
 const main20 = buildPlan(optionsWithFixture("main2_0"), fixtures);
 assertPlanSafety(main20);
 assert.deepStrictEqual(main20.accountRange, { start: 2, endExclusive: 7 });
