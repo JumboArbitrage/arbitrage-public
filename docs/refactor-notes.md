@@ -20,11 +20,14 @@ This file records known debt intentionally left for a later pass.
   run host-side Node or Go entrypoints.
 - Go strategy selection is now configurable, backend posting is split into a
   helper, and the listener now has characterization-tested helpers for strategy
-  orchestration, pending-window collection, and one-round orchestration.
+  orchestration, pending-window collection, one-round orchestration, and pending
+  subscription setup.
 - `watch()` still owns live setup: config loading, live validation, HTTP/WS RPC
   dialing, per-round pending transaction subscription, and the outer long-running
-  loop. Subscription lifecycle and reconnect behavior are intentionally
-  preserved for now; this is not an accidental omission.
+  loop. The pending subscription channel is still buffered at 100, and each
+  round still creates a new subscription. Subscription lifecycle, unsubscribe,
+  reconnect, and context-cancellation behavior are intentionally preserved for
+  now; this is not an accidental omission.
 - Local EVM integration coverage uses Anvil and mock contracts. Forked-network
   testing remains a separate future step requiring an explicit user RPC. Current
   local-chain coverage does not prove real DEX profitability or network
@@ -32,10 +35,8 @@ This file records known debt intentionally left for a later pass.
 
 ## Recommended Next Refactors
 
-1. If continuing Go listener refactors, only consider the live setup and
-   subscription boundary next. Do not change unsubscribe behavior, reconnect
-   strategy, context cancellation, or the outer loop unless tests first prove the
-   existing behavior and the desired new behavior is explicitly scoped.
+1. Pause deeper Go listener changes unless there is an explicit checkpoint for
+   live setup, reconnect, or subscription lifecycle behavior.
 2. Consolidate TradeInit scripts into a single dry-run-first CLI.
 3. Add network-specific config examples for current testnets instead of Rinkeby.
 4. Add an explicit forked-network EVM test profile once a user-owned RPC is
