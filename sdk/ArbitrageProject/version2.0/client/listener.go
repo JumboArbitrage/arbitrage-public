@@ -53,41 +53,32 @@ NEXT_BLOCK:
 		return
 	}
 
-	txData := collectPendingWindow(
+	listenerState = runListenerRound(
 		context.Background(),
+		config,
+		listenerState,
 		txch,
 		func(ctx context.Context, txhash common.Hash) (*types.Transaction, error) {
 			tx, _, err := backend.TransactionByHash(ctx, txhash)
 			return tx, err
 		},
+		func(ctx context.Context, param ArbitrageParem) error {
+			return backendClient.PostArbitrage(ctx, param)
+		},
+		time.Sleep,
 		time.Second*3, //设置为七秒后停止获取交易
 	)
-	if len(txData) == 0 {
-		log.Printf("no transaction")
-		//		time.Sleep(time.Second * 10)
-		goto NEXT_BLOCK
-	}
-	var params []ArbitrageParem
-	var strategySleep time.Duration
-	listenerState, params, strategySleep = runListenerStrategy(config, listenerState, txData)
-	for _, param := range params {
-		postArbitrageParam(backendClient, param)
-	}
-	if strategySleep > 0 {
-		time.Sleep(strategySleep)
-	}
-	time.Sleep(time.Second * 20)
 	goto NEXT_BLOCK
 }
 
-func postArbitrageParam(backendClient BackendClient, param ArbitrageParem) {
+func postArbitrageParam(ctx context.Context, post arbitragePoster, param ArbitrageParem) {
 	gasPrice, err := FormatGasPriceWei(param.Gasprice)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 	log.Println("The GasPrice is", gasPrice)
-	if err := backendClient.PostArbitrage(context.Background(), param); err != nil {
+	if err := post(ctx, param); err != nil {
 		log.Println(err)
 		return
 	}
