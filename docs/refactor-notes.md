@@ -5,8 +5,9 @@ This file records known debt intentionally left for a later pass.
 ## Preserved Legacy Areas
 
 - `sdk/TradeInit/loal-version/js/main*.js` contains many near-duplicate scripts.
-  They should be consolidated into a single CLI after the dry-run/live boundary
-  is stable.
+  They should be consolidated into a single CLI only after there is a
+  dry-run-only CLI contract and fixture coverage for the intended request
+  shapes.
 - `sdk/TradeInit/browser-version` is a historical browser demo. It is not the
   preferred execution path and should stay non-secret by default.
 - `sdk/ArbitrageProject/version2.0/back-end/nest-backend` is still the original
@@ -35,12 +36,16 @@ This file records known debt intentionally left for a later pass.
 - `.env.example` and the active docs now use Sepolia as the current application
   testnet example. Historical Rinkeby references inside archived TradeInit and
   browser-demo code are preserved as legacy context, not supported entrypoints.
+- TradeInit legacy safety is now covered by a root test that checks archived
+  package manifests, empty config placeholders, browser demo local-secret
+  references, and secret-scan coverage for the legacy tree.
 
 ## Recommended Next Refactors
 
 1. Pause deeper Go listener changes unless there is an explicit checkpoint for
    live setup, reconnect, or subscription lifecycle behavior.
-2. Consolidate TradeInit scripts into a single dry-run-first CLI.
+2. Define a dry-run-only TradeInit CLI contract and fixtures before
+   consolidating the repeated legacy scripts.
 3. Add an explicit forked-network EVM test profile once a user-owned RPC is
    available.
 4. Decide whether to remove or archive the Nest scaffold and browser demo.

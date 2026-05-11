@@ -133,6 +133,9 @@ This repo does not automatically send approval transactions.
 - `docs/refactor-notes.md`: known follow-up refactor debt.
 - `tools/secret-scan.js`: local safety scan for hard-coded provider keys,
   private key values, browser key includes, and raw serialized transaction logs.
+- `tools/tradeinit-legacy-boundary.test.js`: safety boundary test proving the
+  archived TradeInit manifests, config placeholders, and browser demo secret
+  references stay non-active and non-secret.
 
 ## Verification
 
@@ -145,6 +148,7 @@ docker compose run --rm test
 That runs:
 
 - secret scan
+- TradeInit legacy boundary checks
 - Express production dependency audit
 - Express dry-run API test
 - Go strategy tests
@@ -166,6 +170,12 @@ The active Express backend has a small dependency surface: `express`, `web3`,
 `bignumber.js`, and `dotenv`. Historical SDK, TradeInit, and Nest package
 manifests are archived and intentionally do not install dependencies in this
 safety-first pass.
+
+The TradeInit browser demo and repeated `main*.js` files are preserved legacy
+traffic generators, not a supported frontend. Consolidating them into a single
+CLI should happen only after defining a dry-run-only CLI contract and fixture
+tests; this repo should not revive old `web3` or `ethereumjs-tx` dependencies as
+part of routine verification.
 
 If dependency installation or Docker build fails because the network is blocked,
 rerun Docker Compose in an environment that can download npm and Go modules.

@@ -47,21 +47,33 @@ function walk(dir, files = []) {
   return files;
 }
 
-const findings = [];
-for (const file of walk(root)) {
-  const rel = path.relative(root, file);
-  const content = fs.readFileSync(file, "utf8");
-  for (const check of checks) {
-    if (check.pattern.test(content)) {
-      findings.push(`${rel}: ${check.name}`);
+function scanRoot(scanRootDir) {
+  const findings = [];
+  for (const file of walk(scanRootDir)) {
+    const rel = path.relative(scanRootDir, file);
+    const content = fs.readFileSync(file, "utf8");
+    for (const check of checks) {
+      if (check.pattern.test(content)) {
+        findings.push(`${rel}: ${check.name}`);
+      }
     }
   }
+  return findings;
 }
 
-if (findings.length) {
-  console.error("Secret scan failed:");
-  for (const finding of findings) console.error(`- ${finding}`);
-  process.exit(1);
+function main() {
+  const findings = scanRoot(root);
+  if (findings.length) {
+    console.error("Secret scan failed:");
+    for (const finding of findings) console.error(`- ${finding}`);
+    process.exit(1);
+  }
+
+  console.log("Secret scan passed.");
 }
 
-console.log("Secret scan passed.");
+if (require.main === module) {
+  main();
+}
+
+module.exports = { scanRoot };

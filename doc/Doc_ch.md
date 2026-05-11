@@ -97,6 +97,7 @@ docker compose run --rm test
 测试内容：
 
 - 检查当前 tree 不应包含明显 provider key、私钥值、浏览器 key 引用或 raw signed transaction 日志；
+- 检查 archived TradeInit package、空配置占位和 browser 本地 secret 引用仍然保持非 active、非 secret；
 - active Express 生产依赖通过 `npm audit`；
 - Express 后端在 dry-run 下只返回计划，不发送交易；
 - Go 解码和策略逻辑使用 fixture 做确定性验证。
@@ -110,3 +111,7 @@ docker compose --profile evm-test down
 
 这个测试使用本地 Anvil 链和 mock contracts，不使用真实 RPC、真实私钥或真实资金。
 它只验证本地签名和提交路径，不证明真实 DEX 收益或真实网络兼容性。
+
+TradeInit browser demo 和重复的 `main*.js` 仍然只是历史 traffic generator。
+在添加 dry-run-only CLI contract 和 fixture tests 之前，不要把它们当成支持中的
+frontend 或 CLI。
