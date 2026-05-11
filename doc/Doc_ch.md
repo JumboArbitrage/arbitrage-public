@@ -73,7 +73,13 @@ cp .env.example .env
 docker compose --profile live up live-backend live-client
 ```
 
-历史代码原本使用 Rinkeby + Uniswap V2。Rinkeby 现在是历史测试网；如果要实盘或新测试网运行，需要用户自己提供当前网络的 RPC、账户和合约地址。
+历史代码原本使用 Rinkeby + Uniswap V2。Rinkeby 和 Goerli 已经是废弃测试网；
+Holesky 也不再是推荐的 validator/staking 测试网。应用级测试默认优先考虑
+Sepolia；Hoodi 主要用于 validator 和 staking 测试。
+
+`.env.example` 里的 Sepolia chain metadata 只是当前测试网示例，不包含 RPC、
+账户、router/factory/WETH 地址或 test token 部署。live 使用时，必须为目标网络
+显式提供这些值。
 
 这一轮安全整理还没有在真实链上验证 live 提交。Sell 请求会调用
 `swapExactTokensForETH`；live 使用前，buy-out 账户必须先 approve 配置的

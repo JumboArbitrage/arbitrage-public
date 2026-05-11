@@ -12,9 +12,13 @@ sends transactions to a chain. Live chain writes require both:
 
 ## Current Limits
 
-- The historical prototype targeted Rinkeby and Uniswap V2. Rinkeby is no longer
-  a current public testnet, so live use requires user-provided RPC endpoints,
-  contract addresses, and funded accounts for the target network.
+- The historical prototype targeted Rinkeby and Uniswap V2. Rinkeby and Goerli
+  are deprecated, and Holesky is no longer the recommended validator/staking
+  testnet. Use Sepolia for application-level testing unless you have a specific
+  reason to target another network.
+- Sepolia is only a network example in this repo. Live use still requires
+  user-provided RPC endpoints, contract addresses, approvals, and funded
+  accounts for the exact target network.
 - This pass does not prove arbitrage profitability. It only makes the repo safer,
   isolated, testable, and easier to continue refactoring.
 - The legacy browser demo and repeated TradeInit scripts are preserved for now,
@@ -106,6 +110,12 @@ docker compose --profile live up live-backend live-client
 The Go listener refuses to start unless `LIVE_TRADING=1` and both RPC URLs are
 present. The backend refuses live execution unless the required RPC, account,
 private key, and contract settings are present.
+
+The sample `.env.example` uses Sepolia chain metadata (`CHAIN_ID=11155111`) as a
+current application testnet example. That does not imply a usable router,
+factory, WETH, or test-token deployment exists for this project; provide the
+contracts you intend to trade against. Hoodi is primarily for validator and
+staking testing, not this application's default live target.
 
 Sell requests call `swapExactTokensForETH`; before live use, the buy-out
 account must approve the configured router to spend the configured test token.

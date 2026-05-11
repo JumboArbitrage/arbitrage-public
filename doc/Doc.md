@@ -77,9 +77,16 @@ cp .env.example .env
 docker compose --profile live up live-backend live-client
 ```
 
-Rinkeby was the original target network in the historical code. Rinkeby is now a
-legacy testnet, so live use requires current RPC endpoints and contract
-addresses supplied by the user.
+Rinkeby was the original target network in the historical code. Rinkeby and
+Goerli are deprecated, and Holesky is no longer the recommended
+validator/staking testnet. For application-level testing, use Sepolia unless you
+have a specific reason to target another network. Hoodi is primarily for
+validator and staking testing.
+
+The sample `.env.example` uses Sepolia chain metadata only as a current testnet
+example. It does not provide RPC URLs, accounts, router/factory/WETH addresses,
+or a test-token deployment. Live use requires all of those values to be supplied
+for the exact network being used.
 
 This safety pass has not verified live submission on a real chain. Sell requests
 require the buy-out account to approve the configured router for the configured

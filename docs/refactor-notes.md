@@ -32,16 +32,18 @@ This file records known debt intentionally left for a later pass.
   testing remains a separate future step requiring an explicit user RPC. Current
   local-chain coverage does not prove real DEX profitability or network
   compatibility.
+- `.env.example` and the active docs now use Sepolia as the current application
+  testnet example. Historical Rinkeby references inside archived TradeInit and
+  browser-demo code are preserved as legacy context, not supported entrypoints.
 
 ## Recommended Next Refactors
 
 1. Pause deeper Go listener changes unless there is an explicit checkpoint for
    live setup, reconnect, or subscription lifecycle behavior.
 2. Consolidate TradeInit scripts into a single dry-run-first CLI.
-3. Add network-specific config examples for current testnets instead of Rinkeby.
-4. Add an explicit forked-network EVM test profile once a user-owned RPC is
+3. Add an explicit forked-network EVM test profile once a user-owned RPC is
    available.
-5. Decide whether to remove or archive the Nest scaffold and browser demo.
+4. Decide whether to remove or archive the Nest scaffold and browser demo.
 
 ## Isolation Rule
 
