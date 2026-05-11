@@ -67,6 +67,36 @@ services:
       PATH: /usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     command: bash -c "GOCACHE=/go-build GOMODCACHE=/go/pkg/mod go mod download && GOCACHE=/go-build GOMODCACHE=/go/pkg/mod go run listener.go Decodetxdata.go func1.go func2.go utils.go config.go backend_client.go"
 
+  anvil:
+    profiles: ["evm-test"]
+    image: ghcr.io/foundry-rs/foundry:stable
+    entrypoint: ["anvil"]
+    command:
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8545"
+      - "--chain-id"
+      - "31337"
+
+  evm-test:
+    profiles: ["evm-test"]
+    build: .
+    working_dir: /workspace
+    depends_on:
+      - anvil
+    volumes:
+      - .:/workspace
+      - npm-cache:/root/.npm
+      - dependency-cache:/deps
+    environment:
+      ARBITRAGE_ISOLATED: "1"
+      LIVE_TRADING: "1"
+      NODE_ENV: test
+      ANVIL_RPC_URL: http://anvil:8545
+      PATH: /usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    command: bash -c "npm run test:evm"
+
 volumes:
   npm-cache:
   go-cache:

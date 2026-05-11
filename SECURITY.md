@@ -53,6 +53,10 @@ this safety-first pass. Historical shell scripts under `sdk/scripts` are
 archived and intentionally exit instead of running host-side Node or Go
 commands.
 
+Optional local EVM integration tests run only through the explicit
+`evm-test` Compose profile. They use public Anvil test accounts against a local
+chain and must not be treated as live-network validation.
+
 ## Reporting
 
 If you find a security issue in this public repository, do not open an issue

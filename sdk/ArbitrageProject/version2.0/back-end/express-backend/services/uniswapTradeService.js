@@ -9,6 +9,14 @@ function toWei(value) {
   return new BigNumber(value).multipliedBy("1000000000000000000").integerValue().toFixed(0);
 }
 
+function toHexQuantity(value) {
+  const decimal = new BigNumber(value);
+  if (!decimal.isFinite() || decimal.lt(0) || !decimal.isInteger()) {
+    throw new Error("Transaction quantity must be a non-negative integer");
+  }
+  return `0x${BigInt(decimal.toFixed(0)).toString(16)}`;
+}
+
 async function buildLiveTransaction(plan, config) {
   const web3 = createWeb3(config);
   const routerAbi = require("../public/ABI/UniswapV2Router02ABI.json");
@@ -17,7 +25,7 @@ async function buildLiveTransaction(plan, config) {
 
   if (plan.action === "buy") {
     const account = config.buyInAccount;
-    const amountOut = web3.utils.toHex(toWei(config.testTokenAmount));
+    const amountOut = toHexQuantity(toWei(config.testTokenAmount));
     const path = [config.contracts.weth, config.contracts.testToken];
     const amountsExpected = await router.methods.getAmountsIn(amountOut, path).call();
     const amountInMax = new BigNumber(amountsExpected[0])
@@ -33,19 +41,19 @@ async function buildLiveTransaction(plan, config) {
       privateKey: config.privateKeyIn,
       txData: {
         nonce: web3.utils.toHex(await web3.eth.getTransactionCount(account)),
-        gas: web3.utils.toHex(config.gasLimit),
-        gasPrice: web3.utils.toHex(plan.gasPriceWei),
+        gas: toHexQuantity(config.gasLimit),
+        gasPrice: toHexQuantity(plan.gasPriceWei),
         chainId: config.chainId,
         to: config.contracts.router,
         from: account,
         data,
-        value: web3.utils.toHex(amountInMax),
+        value: toHexQuantity(amountInMax),
       },
     };
   }
 
   const account = config.buyOutAccount;
-  const amountIn = web3.utils.toHex(toWei(config.testTokenAmount));
+  const amountIn = toHexQuantity(toWei(config.testTokenAmount));
   const path = [config.contracts.testToken, config.contracts.weth];
   const amountsExpected = await router.methods.getAmountsOut(amountIn, path).call();
   const amountOutMin = new BigNumber(amountsExpected[1])
@@ -61,8 +69,8 @@ async function buildLiveTransaction(plan, config) {
     privateKey: config.privateKeyOut,
     txData: {
       nonce: web3.utils.toHex(await web3.eth.getTransactionCount(account)),
-      gas: web3.utils.toHex(config.gasLimit),
-      gasPrice: web3.utils.toHex(plan.gasPriceWei),
+      gas: toHexQuantity(config.gasLimit),
+      gasPrice: toHexQuantity(plan.gasPriceWei),
       chainId: config.chainId,
       to: config.contracts.router,
       from: account,
@@ -86,4 +94,5 @@ async function executeLiveSwap(plan, config) {
 module.exports = {
   buildLiveTransaction,
   executeLiveSwap,
+  toHexQuantity,
 };

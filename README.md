@@ -139,6 +139,17 @@ That runs:
 - Express dry-run API test
 - Go strategy tests
 
+Optional local EVM integration target:
+
+```sh
+docker compose --profile evm-test run --rm evm-test
+docker compose --profile evm-test down
+```
+
+This starts a local Anvil chain, deploys mock token/router contracts, and
+exercises the Express live buy/sell submission path with public Anvil test
+accounts. It does not use real RPC URLs, real private keys, or real funds.
+
 The active Express backend has a small dependency surface: `express`, `web3`,
 `bignumber.js`, and `dotenv`. Historical SDK, TradeInit, and Nest package
 manifests are archived and intentionally do not install dependencies in this

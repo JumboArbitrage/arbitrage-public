@@ -21,6 +21,8 @@ This file records known debt intentionally left for a later pass.
 - Go strategy selection is now configurable, and backend posting is split into
   a helper. The listener still mixes subscription, block-window collection, and
   strategy orchestration.
+- Local EVM integration coverage uses Anvil and mock contracts. Forked-network
+  testing remains a separate future step requiring an explicit user RPC.
 
 ## Recommended Next Refactors
 
@@ -28,7 +30,9 @@ This file records known debt intentionally left for a later pass.
    orchestration.
 2. Consolidate TradeInit scripts into a single dry-run-first CLI.
 3. Add network-specific config examples for current testnets instead of Rinkeby.
-4. Decide whether to remove or archive the Nest scaffold and browser demo.
+4. Add an explicit forked-network EVM test profile once a user-owned RPC is
+   available.
+5. Decide whether to remove or archive the Nest scaffold and browser demo.
 
 ## Isolation Rule
 

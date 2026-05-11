@@ -94,3 +94,12 @@ docker compose run --rm test
 - active Express 生产依赖通过 `npm audit`；
 - Express 后端在 dry-run 下只返回计划，不发送交易；
 - Go 解码和策略逻辑使用 fixture 做确定性验证。
+
+可选的本地 EVM 集成测试：
+
+```sh
+docker compose --profile evm-test run --rm evm-test
+docker compose --profile evm-test down
+```
+
+这个测试使用本地 Anvil 链和 mock contracts，不使用真实 RPC、真实私钥或真实资金。

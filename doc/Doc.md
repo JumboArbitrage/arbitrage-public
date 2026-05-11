@@ -101,3 +101,13 @@ The test suite checks that:
 - active Express production dependencies pass `npm audit`;
 - the Express backend returns a dry-run plan without submitting a transaction;
 - the Go decoder and strategy logic behave deterministically on fixtures.
+
+Optional local EVM integration testing:
+
+```sh
+docker compose --profile evm-test run --rm evm-test
+docker compose --profile evm-test down
+```
+
+This uses a local Anvil chain and mock contracts. It does not use real RPC URLs,
+real private keys, or real funds.
