@@ -65,7 +65,7 @@ services:
       ARBITRAGE_ISOLATED: "1"
       LIVE_TRADING: "1"
       PATH: /usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-    command: bash -c "GOCACHE=/go-build GOMODCACHE=/go/pkg/mod go mod download && GOCACHE=/go-build GOMODCACHE=/go/pkg/mod go run listener.go Decodetxdata.go func1.go func2.go utils.go config.go"
+    command: bash -c "GOCACHE=/go-build GOMODCACHE=/go/pkg/mod go mod download && GOCACHE=/go-build GOMODCACHE=/go/pkg/mod go run listener.go Decodetxdata.go func1.go func2.go utils.go config.go backend_client.go"
 
 volumes:
   npm-cache:

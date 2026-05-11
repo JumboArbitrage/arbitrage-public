@@ -3,15 +3,10 @@ package main
 import (
 	"context"
 	"log"
-	"math"
-	"math/big"
 	"net/http"
-	ur "net/url"
 	"os"
 	"os/signal"
 	"sort"
-	"strconv"
-	"strings"
 	"syscall"
 	"time"
 
@@ -49,6 +44,7 @@ func watch() {
 		return
 	}
 	gcli := gethclient.New(rpcCli)
+	backendClient := NewBackendClient(config)
 NEXT_BLOCK:
 	txch := make(chan common.Hash, 100)
 	_, err = gcli.SubscribePendingTransactions(context.Background(), txch)
@@ -99,46 +95,8 @@ A_BLOCK:
 	case 1:
 		AbitsPrs := txData.Strategy1()
 		for _, Abit := range AbitsPrs {
-			if Abit.InOrOut == BuyOut {
-				//to do,暂时传的是字符串
-				postData := ur.Values{}
-				temp := BigIntToFloat(Abit.Gasprice).String() //得到形如1.00032e-9的字符串
-				temp1 := strings.Split(temp, "e")             //按e进行分割
-				p1 := temp1[0]                                //得到数值部分
-				p2 := temp1[1]                                //得到指数部分
-				p3 := strings.Split(p1, ".")[1]               //按小数点进行分割,得到小数点到e处的数字,重点是他的长度
-				nump2, _ := strconv.Atoi(p2)
-				GP := BigIntToFloat(Abit.Gasprice).Text('f', len(p3)+int(math.Abs(float64(nump2))))
-				//Text函数的第二个参数代表小数点后面保留的位数,感觉像上面这个1.00032e-9就应该是5+9
-				//log.Println(BigIntToFloat(Abit.Gasprice).Text('f', len(p3)+int(math.Abs(float64(nump2)))))
-				log.Println("The GasPrice is", GP)
-				postData.Add("Gasprice", GP)
-				postData.Add("InOrOut", "false")
-				log.Printf("true")
-				resp, err := http.Post(config.BackendURL, "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
-				if err != nil {
-					log.Println(err)
-				}
-				log.Println(resp)
-			} else if Abit.InOrOut == BuyIn {
-				postData := ur.Values{}
-				temp := BigIntToFloat(Abit.Gasprice).String() //得到形如1.00032e-9的字符串
-				temp1 := strings.Split(temp, "e")             //按e进行分割
-				p1 := temp1[0]                                //得到数值部分
-				p2 := temp1[1]                                //得到指数部分
-				p3 := strings.Split(p1, ".")[1]               //按小数点进行分割,得到小数点到e处的数字,重点是他的长度
-				nump2, _ := strconv.Atoi(p2)
-				GP := BigIntToFloat(Abit.Gasprice).Text('f', len(p3)+int(math.Abs(float64(nump2))))
-				log.Println("The GasPrice is", GP)
-				//log.Println(BigIntToFloat(Abit.Gasprice).Text('f', len(p3)+int(math.Abs(float64(nump2)))))
-				postData.Add("Gasprice", GP)
-				postData.Add("InOrOut", "true")
-				resp, err := http.Post(config.BackendURL, "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
-				if err != nil {
-					log.Println(err)
-				}
-				log.Println("false")
-				log.Println(resp)
+			if Abit.InOrOut == BuyOut || Abit.InOrOut == BuyIn {
+				postArbitrageParam(backendClient, Abit)
 			}
 		}
 		//fmt.Println(postData)
@@ -155,47 +113,8 @@ A_BLOCK:
 		// }
 		//postData := ur.Values{}
 		for _, Abit := range AbitsPrs {
-			if Abit.InOrOut == BuyIn {
-				//to do,暂时传的是字符串
-				postData := ur.Values{}
-				temp := BigIntToFloat(Abit.Gasprice).String() //得到形如1.00032e-9的字符串
-				temp1 := strings.Split(temp, "e")             //按e进行分割
-				p1 := temp1[0]                                //得到数值部分
-				p2 := temp1[1]                                //得到指数部分
-				p3 := strings.Split(p1, ".")[1]               //按小数点进行分割,得到小数点到e处的数字,重点是他的长度
-				nump2, _ := strconv.Atoi(p2)
-				GP := BigIntToFloat(Abit.Gasprice).Text('f', len(p3)+int(math.Abs(float64(nump2))))
-				//Text函数的第二个参数代表小数点后面保留的位数,感觉像上面这个1.00032e-9就应该是5+9
-				//log.Println(BigIntToFloat(Abit.Gasprice).Text('f', len(p3)+int(math.Abs(float64(nump2)))))
-				log.Println("The GasPrice is", GP)
-				postData.Add("Gasprice", GP)
-				postData.Add("InOrOut", "true")
-				//	log.Printf("true")
-				resp, err := http.Post(config.BackendURL, "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
-				if err != nil {
-					log.Println(err)
-				}
-				log.Println(resp)
-			} else if Abit.InOrOut == BuyOut {
-				postData := ur.Values{}
-				temp := BigIntToFloat(Abit.Gasprice).String() //得到形如1.00032e-9的字符串
-				temp1 := strings.Split(temp, "e")             //按e进行分割
-				p1 := temp1[0]                                //得到数值部分
-				p2 := temp1[1]                                //得到指数部分
-				p3 := strings.Split(p1, ".")[1]               //按小数点进行分割,得到小数点到e处的数字,重点是他的长度
-				nump2, _ := strconv.Atoi(p2)
-				GP := BigIntToFloat(Abit.Gasprice).Text('f', len(p3)+int(math.Abs(float64(nump2))))
-				//Text函数的第二个参数代表小数点后面保留的位数,感觉像上面这个1.00032e-9就应该是5+9
-				//log.Println(BigIntToFloat(Abit.Gasprice).Text('f', len(p3)+int(math.Abs(float64(nump2)))))
-				log.Println("The GasPrice is", GP)
-				postData.Add("Gasprice", GP)
-				postData.Add("InOrOut", "false")
-				log.Printf("true")
-				resp, err := http.Post(config.BackendURL, "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
-				if err != nil {
-					log.Println(err)
-				}
-				log.Println(resp)
+			if Abit.InOrOut == BuyIn || Abit.InOrOut == BuyOut {
+				postArbitrageParam(backendClient, Abit)
 			}
 		}
 		// resp, err := http.Post("http://localhost:8081/arbitrage", "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
@@ -211,17 +130,6 @@ A_BLOCK:
 		// 	flagofs3--
 		// 	// return a AbitPs of BuyOut
 		// }
-		divtemp := new(big.Int).SetInt64(10)
-		p := new(big.Int)
-		p.Div(txData[0].Gasprice, divtemp)
-		p.Add(p, txData[0].Gasprice)
-		temp := BigIntToFloat(p).String() //得到形如1.00032e-9的字符串
-		temp1 := strings.Split(temp, "e") //按e进行分割
-		p1 := temp1[0]                    //得到数值部分
-		p2 := temp1[1]                    //得到指数部分
-		p3 := strings.Split(p1, ".")[1]   //按小数点进行分割,得到小数点到e处的数字,重点是他的长度
-		nump2, _ := strconv.Atoi(p2)
-		Gasstring := BigIntToFloat(txData[0].Gasprice).Text('f', len(p3)+int(math.Abs(float64(nump2))))
 		tempflag := flagofs3
 		if flagofs3 == 0 {
 			if txData[0].CheckInorOut() == BuyIn {
@@ -229,14 +137,10 @@ A_BLOCK:
 				tempflag = flagofs3 + 1
 				// return a AbitPs of BuyIn
 				log.Println("BuyIn")
-				postData := ur.Values{}
-				postData.Add("Gasprice", Gasstring)
-				postData.Add("InOrOut", "true")
-				resp, err := http.Post(config.BackendURL, "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
-				if err != nil {
-					log.Println(err)
-				}
-				log.Println(resp)
+				postArbitrageParam(backendClient, ArbitrageParem{
+					Gasprice: txData[0].Gasprice,
+					InOrOut:  BuyIn,
+				})
 			} else {
 				log.Println("We need a BuyIn,but get a BuyOut")
 			}
@@ -261,15 +165,11 @@ A_BLOCK:
 				tempflag = flagofs3 - 1
 				// return a AbtisPs of BuyOut
 				//postData.Add("Gasprice", BigIntToFloat(txData[0].Gasprice).String())
-				postData := ur.Values{}
 				log.Println("Butout")
-				postData.Add("Gasprice", Gasstring)
-				postData.Add("InOrOut", "false")
-				resp, err := http.Post(config.BackendURL, "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
-				if err != nil {
-					log.Println(err)
-				}
-				log.Println(resp)
+				postArbitrageParam(backendClient, ArbitrageParem{
+					Gasprice: txData[0].Gasprice,
+					InOrOut:  BuyOut,
+				})
 				time.Sleep(time.Second * 10)
 			} else {
 				log.Println("We need a BuyOut,but get a BuyIn")
@@ -295,6 +195,20 @@ A_BLOCK:
 	}
 	time.Sleep(time.Second * 20)
 	goto NEXT_BLOCK
+}
+
+func postArbitrageParam(backendClient BackendClient, param ArbitrageParem) {
+	gasPrice, err := FormatGasPriceWei(param.Gasprice)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	log.Println("The GasPrice is", gasPrice)
+	if err := backendClient.PostArbitrage(context.Background(), param); err != nil {
+		log.Println(err)
+		return
+	}
+	log.Println("posted arbitrage request")
 }
 
 func main() {

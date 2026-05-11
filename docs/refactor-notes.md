@@ -16,16 +16,17 @@ This file records known debt intentionally left for a later pass.
 - `sdk/package.json` and `sdk/TradeInit/loal-version/package.json` are archived
   without dependencies. Reviving those scripts needs a separate dependency and
   API migration, especially from old `web3` and `ethereumjs-tx`.
-- Go strategy selection is now configurable, but the strategy code still mixes
-  formatting, posting, and decision logic inside `listener.go`.
+- Go strategy selection is now configurable, and backend posting is split into
+  a helper. The listener still mixes subscription, block-window collection, and
+  strategy orchestration.
 
 ## Recommended Next Refactors
 
-1. Split Go listener posting into a small backend client helper.
-2. Replace repeated gas-price string formatting with one tested helper.
-3. Consolidate TradeInit scripts into a single dry-run-first CLI.
-4. Add network-specific config examples for current testnets instead of Rinkeby.
-5. Decide whether to remove or archive the Nest scaffold and browser demo.
+1. Split Go listener subscription and block-window collection from strategy
+   orchestration.
+2. Consolidate TradeInit scripts into a single dry-run-first CLI.
+3. Add network-specific config examples for current testnets instead of Rinkeby.
+4. Decide whether to remove or archive the Nest scaffold and browser demo.
 
 ## Isolation Rule
 
