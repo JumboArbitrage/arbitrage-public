@@ -1,3 +1,3 @@
-cd ../ArbitrageProject/version2.0/client
-#go mod tidy
-go run listener.go Decodetxdata.go func1.go func2.go utils.go config.go backend_client.go
+#!/usr/bin/env sh
+echo "Archived script: use docker compose run --rm test or docker compose --profile live up live-backend live-client from the repo root." >&2
+exit 1

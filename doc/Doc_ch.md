@@ -75,6 +75,13 @@ docker compose --profile live up live-backend live-client
 
 历史代码原本使用 Rinkeby + Uniswap V2。Rinkeby 现在是历史测试网；如果要实盘或新测试网运行，需要用户自己提供当前网络的 RPC、账户和合约地址。
 
+这一轮安全整理还没有在真实链上验证 live 提交。Sell 请求会调用
+`swapExactTokensForETH`；live 使用前，buy-out 账户必须先 approve 配置的
+router 使用配置的 test token。后端不会自动发送 approve 交易。
+
+`sdk/scripts` 下的历史 shell 脚本已经归档。请使用 Docker Compose 入口，
+不要直接运行这些脚本。
+
 ## 测试
 
 ```sh

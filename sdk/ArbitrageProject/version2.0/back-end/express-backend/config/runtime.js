@@ -20,8 +20,25 @@ function envNumber(name, fallback) {
   return parsed;
 }
 
+function isPositiveNumber(value) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0;
+}
+
 function isLiveTrading() {
   return env("LIVE_TRADING", "0") === "1";
+}
+
+function isAddress(value) {
+  return /^0x[a-fA-F0-9]{40}$/.test(String(value || ""));
+}
+
+function isNonZeroAddress(value) {
+  return isAddress(value) && !/^0x0{40}$/i.test(String(value));
+}
+
+function isPrivateKey(value) {
+  return /^(0x)?[a-fA-F0-9]{64}$/.test(String(value || ""));
 }
 
 function loadRuntimeConfig() {
@@ -57,6 +74,7 @@ function validateLiveConfig(config) {
     ["PRIVATE_KEY_2", config.privateKeyOut],
     ["BUY_IN_ACCOUNT", config.buyInAccount],
     ["BUY_OUT_ACCOUNT", config.buyOutAccount],
+    ["FACTORY_CONTRACT_ADDRESS", config.contracts.factory],
     ["ROUTER_CONTRACT_ADDRESS", config.contracts.router],
     ["WETH9_CONTRACT_ADDRESS", config.contracts.weth],
     ["TEST_CONTRACT_ADDRESS", config.contracts.testToken],
@@ -66,6 +84,51 @@ function validateLiveConfig(config) {
   if (missing.length) {
     throw new Error(
       `Live trading requires: ${missing.map(([name]) => name).join(", ")}`,
+    );
+  }
+
+  const addressFields = [
+    ["BUY_IN_ACCOUNT", config.buyInAccount],
+    ["BUY_OUT_ACCOUNT", config.buyOutAccount],
+    ["FACTORY_CONTRACT_ADDRESS", config.contracts.factory],
+    ["ROUTER_CONTRACT_ADDRESS", config.contracts.router],
+    ["WETH9_CONTRACT_ADDRESS", config.contracts.weth],
+    ["TEST_CONTRACT_ADDRESS", config.contracts.testToken],
+  ];
+  const invalidAddresses = addressFields.filter(([, value]) => !isNonZeroAddress(value));
+  if (invalidAddresses.length) {
+    throw new Error(
+      `Live trading requires valid non-zero 0x addresses for: ${invalidAddresses
+        .map(([name]) => name)
+        .join(", ")}`,
+    );
+  }
+
+  const privateKeyFields = [
+    ["PRIVATE_KEY_1", config.privateKeyIn],
+    ["PRIVATE_KEY_2", config.privateKeyOut],
+  ];
+  const invalidPrivateKeys = privateKeyFields.filter(([, value]) => !isPrivateKey(value));
+  if (invalidPrivateKeys.length) {
+    throw new Error(
+      `Live trading requires 64-hex-character private keys for: ${invalidPrivateKeys
+        .map(([name]) => name)
+        .join(", ")}`,
+    );
+  }
+
+  const positiveNumberFields = [
+    ["CHAIN_ID", config.chainId],
+    ["ARBITRAGE_GAS_LIMIT", config.gasLimit],
+    ["ARBITRAGE_TEST_TOKEN_AMOUNT", config.testTokenAmount],
+    ["ARBITRAGE_ETH_AMOUNT", config.ethAmount],
+  ];
+  const invalidNumbers = positiveNumberFields.filter(([, value]) => !isPositiveNumber(value));
+  if (invalidNumbers.length) {
+    throw new Error(
+      `Live trading requires positive numbers for: ${invalidNumbers
+        .map(([name]) => name)
+        .join(", ")}`,
     );
   }
 }

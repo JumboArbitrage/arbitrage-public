@@ -81,6 +81,14 @@ Rinkeby was the original target network in the historical code. Rinkeby is now a
 legacy testnet, so live use requires current RPC endpoints and contract
 addresses supplied by the user.
 
+This safety pass has not verified live submission on a real chain. Sell requests
+require the buy-out account to approve the configured router for the configured
+test token before live use; the backend does not automatically send approval
+transactions.
+
+Historical shell scripts under `sdk/scripts` are archived. Use Docker Compose
+entrypoints instead of running those scripts directly.
+
 ## Tests
 
 ```sh

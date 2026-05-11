@@ -1,7 +1,3 @@
-node "../TradeInit/loal-version/js/main_0.js" --testCount=0.05 --ethCount=0.02
-node "../TradeInit/loal-version/js/main_0.js" --testCount=0.05 --ethCount=0.02
-node "../TradeInit/loal-version/js/main_2.js" --testCount=0.05 --ethCount=0.02
-node "../TradeInit/loal-version/js/main_1.js" --testCount=0.05 --ethCount=0.02
-node "../TradeInit/loal-version/js/main_0.js" --testCount=0.05 --ethCount=0.02
-
-
+#!/usr/bin/env sh
+echo "Archived TradeInit script: use the Docker Compose entrypoints from the repo root." >&2
+exit 1

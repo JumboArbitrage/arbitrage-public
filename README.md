@@ -90,11 +90,13 @@ The response contains a redacted execution plan and `submitted: false`.
 ## Live Mode
 
 Live mode can send signed transactions. Use only with accounts and funds you are
-prepared to lose.
+prepared to lose. The current safety pass has not verified live submission on a
+real chain.
 
 1. Copy `.env.example` to `.env`.
 2. Fill in `RPC_HTTP_URL`, `RPC_WS_URL`, `PRIVATE_KEY_1`, `PRIVATE_KEY_2`,
-   account addresses, and contract addresses for your target network.
+   `BUY_IN_ACCOUNT`, `BUY_OUT_ACCOUNT`, and contract addresses for your target
+   network.
 3. Start services with the explicit live profile:
 
 ```sh
@@ -105,9 +107,15 @@ The Go listener refuses to start unless `LIVE_TRADING=1` and both RPC URLs are
 present. The backend refuses live execution unless the required RPC, account,
 private key, and contract settings are present.
 
+Sell requests call `swapExactTokensForETH`; before live use, the buy-out
+account must approve the configured router to spend the configured test token.
+This repo does not automatically send approval transactions.
+
 ## Project Layout
 
 - `sdk/TradeInit`: legacy transaction generation scripts and browser demo.
+  Historical shell scripts under `sdk/scripts` are archived and intentionally
+  exit instead of running host-side Node or Go commands.
 - `sdk/ArbitrageProject/version2.0/client`: Go pending-transaction listener and
   strategy logic.
 - `sdk/ArbitrageProject/version2.0/back-end/express-backend`: safe Express

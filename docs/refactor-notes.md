@@ -16,6 +16,8 @@ This file records known debt intentionally left for a later pass.
 - `sdk/package.json` and `sdk/TradeInit/loal-version/package.json` are archived
   without dependencies. Reviving those scripts needs a separate dependency and
   API migration, especially from old `web3` and `ethereumjs-tx`.
+- `sdk/scripts/*.sh` are archived guard scripts. They intentionally refuse to
+  run host-side Node or Go entrypoints.
 - Go strategy selection is now configurable, and backend posting is split into
   a helper. The listener still mixes subscription, block-window collection, and
   strategy orchestration.

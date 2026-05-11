@@ -1,1 +1,3 @@
-node "../ArbitrageProject/version2.0/back-end/express-backend/app.js" --testCount=0.01
+#!/usr/bin/env sh
+echo "Archived script: use docker compose run --rm test or docker compose --profile live up live-backend live-client from the repo root." >&2
+exit 1
