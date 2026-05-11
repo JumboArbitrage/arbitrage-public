@@ -107,6 +107,8 @@ The test suite checks that:
 - no obvious provider keys or private key values are committed;
 - archived TradeInit manifests, config placeholders, and browser local-secret
   references stay non-active and non-secret;
+- the TradeInit dry-run CLI matches selected legacy traffic-shape fixtures
+  without signing or connecting to RPC;
 - active Express production dependencies pass `npm audit`;
 - the Express backend returns a dry-run plan without submitting a transaction;
 - the Go decoder and strategy logic behave deterministically on fixtures.
@@ -125,3 +127,8 @@ plumbing only, not real DEX profitability or real-network compatibility.
 The TradeInit browser demo and repeated `main*.js` scripts remain historical
 traffic generators. Do not treat them as a supported frontend or CLI until a
 dry-run-only CLI contract and fixture tests are added.
+
+The current TradeInit dry-run CLI is that first contract. It only prints JSON
+plans for selected legacy traffic shapes and does not import the old scripts,
+read private keys, sign transactions, or call RPC. It is not a live replacement
+for the historical scripts.

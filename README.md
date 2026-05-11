@@ -126,6 +126,9 @@ This repo does not automatically send approval transactions.
 - `sdk/TradeInit`: legacy transaction generation scripts and browser demo.
   Historical shell scripts under `sdk/scripts` are archived and intentionally
   exit instead of running host-side Node or Go commands.
+- `sdk/TradeInit/dry-run`: dry-run-only TradeInit plan generator and static
+  fixtures for selected legacy traffic shapes. It never signs, sends, imports
+  old transaction scripts, or connects to RPC.
 - `sdk/ArbitrageProject/version2.0/client`: Go pending-transaction listener and
   strategy logic.
 - `sdk/ArbitrageProject/version2.0/back-end/express-backend`: safe Express
@@ -136,6 +139,8 @@ This repo does not automatically send approval transactions.
 - `tools/tradeinit-legacy-boundary.test.js`: safety boundary test proving the
   archived TradeInit manifests, config placeholders, and browser demo secret
   references stay non-active and non-secret.
+- `tools/tradeinit-dry-run-cli.test.js`: fixture-backed tests for the TradeInit
+  dry-run CLI contract.
 
 ## Verification
 
@@ -149,6 +154,7 @@ That runs:
 
 - secret scan
 - TradeInit legacy boundary checks
+- TradeInit dry-run CLI fixture checks
 - Express production dependency audit
 - Express dry-run API test
 - Go strategy tests
@@ -176,6 +182,24 @@ traffic generators, not a supported frontend. Consolidating them into a single
 CLI should happen only after defining a dry-run-only CLI contract and fixture
 tests; this repo should not revive old `web3` or `ethereumjs-tx` dependencies as
 part of routine verification.
+
+The new TradeInit dry-run CLI is only a plan generator. Example from the
+isolated shell:
+
+```sh
+node sdk/TradeInit/dry-run/cli.js dry-run \
+  --fixture main2_0 \
+  --chain-id 11155111 \
+  --chain-name sepolia \
+  --router-contract 0x1111111111111111111111111111111111111111 \
+  --test-token-contract 0x2222222222222222222222222222222222222222 \
+  --weth-contract 0x3333333333333333333333333333333333333333 \
+  --test-amount 0.01 \
+  --eth-amount 0.005
+```
+
+It prints JSON describing the planned buy/sell traffic shape. It does not read
+private keys, create transactions, or submit anything to a chain.
 
 If dependency installation or Docker build fails because the network is blocked,
 rerun Docker Compose in an environment that can download npm and Go modules.

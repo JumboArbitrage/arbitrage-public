@@ -39,13 +39,16 @@ This file records known debt intentionally left for a later pass.
 - TradeInit legacy safety is now covered by a root test that checks archived
   package manifests, empty config placeholders, browser demo local-secret
   references, and secret-scan coverage for the legacy tree.
+- A dry-run-only TradeInit CLI contract now exists for selected legacy traffic
+  shapes. It is fixture-backed and intentionally avoids old script imports,
+  signing, RPC, and dependency revival.
 
 ## Recommended Next Refactors
 
 1. Pause deeper Go listener changes unless there is an explicit checkpoint for
    live setup, reconnect, or subscription lifecycle behavior.
-2. Define a dry-run-only TradeInit CLI contract and fixtures before
-   consolidating the repeated legacy scripts.
+2. Gradually migrate selected TradeInit traffic shapes into the dry-run CLI only
+   after each shape has fixture coverage.
 3. Add an explicit forked-network EVM test profile once a user-owned RPC is
    available.
 4. Decide whether to remove or archive the Nest scaffold and browser demo.

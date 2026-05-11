@@ -98,6 +98,7 @@ docker compose run --rm test
 
 - 检查当前 tree 不应包含明显 provider key、私钥值、浏览器 key 引用或 raw signed transaction 日志；
 - 检查 archived TradeInit package、空配置占位和 browser 本地 secret 引用仍然保持非 active、非 secret；
+- 检查 TradeInit dry-run CLI 能匹配选定 legacy traffic-shape fixtures，且不签名、不连接 RPC；
 - active Express 生产依赖通过 `npm audit`；
 - Express 后端在 dry-run 下只返回计划，不发送交易；
 - Go 解码和策略逻辑使用 fixture 做确定性验证。
@@ -115,3 +116,7 @@ docker compose --profile evm-test down
 TradeInit browser demo 和重复的 `main*.js` 仍然只是历史 traffic generator。
 在添加 dry-run-only CLI contract 和 fixture tests 之前，不要把它们当成支持中的
 frontend 或 CLI。
+
+当前 TradeInit dry-run CLI 就是第一版 contract。它只为选定 legacy traffic shape
+输出 JSON plan，不 import 旧脚本、不读私钥、不签名、不调用 RPC，也不是历史脚本的
+live 替代品。
