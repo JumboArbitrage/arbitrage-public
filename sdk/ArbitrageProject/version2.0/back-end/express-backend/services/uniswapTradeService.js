@@ -1,6 +1,7 @@
 const BigNumber = require("bignumber.js");
 
 function createWeb3(config) {
+  if (config.web3) return config.web3;
   const { Web3 } = require("web3");
   return new Web3(config.rpcHttpUrl);
 }
@@ -40,7 +41,7 @@ async function buildLiveTransaction(plan, config) {
       web3,
       privateKey: config.privateKeyIn,
       txData: {
-        nonce: web3.utils.toHex(await web3.eth.getTransactionCount(account)),
+        nonce: toHexQuantity(await web3.eth.getTransactionCount(account)),
         gas: toHexQuantity(config.gasLimit),
         gasPrice: toHexQuantity(plan.gasPriceWei),
         chainId: config.chainId,
@@ -68,7 +69,7 @@ async function buildLiveTransaction(plan, config) {
     web3,
     privateKey: config.privateKeyOut,
     txData: {
-      nonce: web3.utils.toHex(await web3.eth.getTransactionCount(account)),
+      nonce: toHexQuantity(await web3.eth.getTransactionCount(account)),
       gas: toHexQuantity(config.gasLimit),
       gasPrice: toHexQuantity(plan.gasPriceWei),
       chainId: config.chainId,

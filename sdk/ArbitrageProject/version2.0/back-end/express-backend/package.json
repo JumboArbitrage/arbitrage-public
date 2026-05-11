@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test": "node test/arbitrage.dry-run.test.js && node test/runtime.validation.test.js"
+    "test": "node test/arbitrage.dry-run.test.js && node test/runtime.validation.test.js && node test/live-transaction-builder.test.js && node test/error-redaction.test.js"
   },
   "author": "",
   "license": "ISC",

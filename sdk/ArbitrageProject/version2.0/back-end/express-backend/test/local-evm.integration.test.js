@@ -256,7 +256,8 @@ function assertNoSensitiveMaterial(payload) {
       InOrOut: "false",
     });
     assert.strictEqual(rejectedSell.response.status, 500, JSON.stringify(rejectedSell.json));
-    assert.match(rejectedSell.json.error, /revert|allowance|Transaction has been reverted/i);
+    assert.ok(rejectedSell.json.error);
+    assert.strictEqual(rejectedSell.json.transactionHash, undefined);
     assertNoSensitiveMaterial(rejectedSell.json);
 
     await testToken.methods

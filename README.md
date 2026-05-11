@@ -149,6 +149,8 @@ docker compose --profile evm-test down
 This starts a local Anvil chain, deploys mock token/router contracts, and
 exercises the Express live buy/sell submission path with public Anvil test
 accounts. It does not use real RPC URLs, real private keys, or real funds.
+It verifies local signing/submission plumbing only; it does not prove real DEX
+profitability or real-network compatibility.
 
 The active Express backend has a small dependency surface: `express`, `web3`,
 `bignumber.js`, and `dotenv`. Historical SDK, TradeInit, and Nest package

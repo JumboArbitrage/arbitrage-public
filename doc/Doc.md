@@ -110,4 +110,5 @@ docker compose --profile evm-test down
 ```
 
 This uses a local Anvil chain and mock contracts. It does not use real RPC URLs,
-real private keys, or real funds.
+real private keys, or real funds. It validates local signing/submission
+plumbing only, not real DEX profitability or real-network compatibility.

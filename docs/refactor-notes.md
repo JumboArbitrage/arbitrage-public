@@ -22,7 +22,9 @@ This file records known debt intentionally left for a later pass.
   a helper. The listener still mixes subscription, block-window collection, and
   strategy orchestration.
 - Local EVM integration coverage uses Anvil and mock contracts. Forked-network
-  testing remains a separate future step requiring an explicit user RPC.
+  testing remains a separate future step requiring an explicit user RPC. Current
+  local-chain coverage does not prove real DEX profitability or network
+  compatibility.
 
 ## Recommended Next Refactors
 

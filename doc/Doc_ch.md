@@ -103,3 +103,4 @@ docker compose --profile evm-test down
 ```
 
 这个测试使用本地 Anvil 链和 mock contracts，不使用真实 RPC、真实私钥或真实资金。
+它只验证本地签名和提交路径，不证明真实 DEX 收益或真实网络兼容性。

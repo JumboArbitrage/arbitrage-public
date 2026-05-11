@@ -2,6 +2,7 @@ const express = require("express");
 
 const { loadRuntimeConfig } = require("./config/runtime");
 const { createArbitrageService } = require("./services/arbitrageService");
+const { redactSensitiveText } = require("./utils/redact");
 
 function createApp(options = {}) {
   const config = options.config || loadRuntimeConfig();
@@ -46,9 +47,17 @@ function createApp(options = {}) {
       next(error);
       return;
     }
-    res.status(error.statusCode || 500).json({
-      error: error.message || "Internal server error",
-    });
+    const statusCode = error.statusCode || 500;
+    const body = {
+      error: redactSensitiveText(error.message || "Internal server error"),
+    };
+    if (statusCode >= 500 && error.code) {
+      body.code = String(error.code);
+    }
+    if (statusCode >= 500 && error.reason) {
+      body.reason = redactSensitiveText(error.reason);
+    }
+    res.status(statusCode).json(body);
   });
 
   return app;
