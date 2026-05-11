@@ -46,8 +46,13 @@ func watch() {
 	gcli := gethclient.New(rpcCli)
 	backendClient := NewBackendClient(config)
 NEXT_BLOCK:
-	txch := make(chan common.Hash, 100)
-	_, err = gcli.SubscribePendingTransactions(context.Background(), txch)
+	txch, err := subscribePendingTransactions(
+		context.Background(),
+		func(ctx context.Context, txch chan<- common.Hash) error {
+			_, err := gcli.SubscribePendingTransactions(ctx, txch)
+			return err
+		},
+	)
 	if err != nil {
 		log.Printf("failed to SubscribePendingTransactions: %v", err)
 		return
