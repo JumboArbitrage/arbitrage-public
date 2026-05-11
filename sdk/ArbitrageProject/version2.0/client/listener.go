@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"sort"
 	"syscall"
 	"time"
 
@@ -31,7 +30,7 @@ func watch() {
 		log.Printf("listener not started: %v", err)
 		return
 	}
-	flagofs3 := 0 //和第三笔策略有关
+	listenerState := ListenerState{} //和第三笔策略有关
 	backend, err := ethclient.Dial(config.RPCHTTPURL)
 	if err != nil {
 		log.Printf("failed to dial: %v", err)
@@ -80,118 +79,14 @@ A_BLOCK:
 		//		time.Sleep(time.Second * 10)
 		goto NEXT_BLOCK
 	}
-	sort.Slice(txData, func(i, j int) bool {
-		p := txData[i].Gasprice.Cmp(txData[j].Gasprice)
-		return p == 1
-	}) // sort txData by Gasprice
-	//FOR_STR3:
-	function := config.Strategy //设置选择哪种策略,默认还是原来的策略2
-	// if len(txData) != 1 && function == 3 {
-	// 	log.Println("len of txdata:", len(txData))
-	// 	goto NEXT_BLOCK
-	// }
-	//fmt.Println(txData)
-	switch function {
-	case 1:
-		AbitsPrs := txData.Strategy1()
-		for _, Abit := range AbitsPrs {
-			if Abit.InOrOut == BuyOut || Abit.InOrOut == BuyIn {
-				postArbitrageParam(backendClient, Abit)
-			}
-		}
-		//fmt.Println(postData)
-		// resp, err := http.Post("http://localhost:8081/arbitrage", "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
-		// if err != nil {
-		// 	log.Println(err)
-		// }
-		// log.Println(resp)
-	case 2:
-		AbitsPrs := txData.Strategy2()
-		// if AbitsPrs == nil {
-		// 	log.Printf("the txData is not balanced")
-		// 	goto NEXT_BLOCK
-		// }
-		//postData := ur.Values{}
-		for _, Abit := range AbitsPrs {
-			if Abit.InOrOut == BuyIn || Abit.InOrOut == BuyOut {
-				postArbitrageParam(backendClient, Abit)
-			}
-		}
-		// resp, err := http.Post("http://localhost:8081/arbitrage", "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
-		// if err != nil {
-		// 	log.Println(err)
-		// }
-		// log.Println(resp)
-	case 3:
-		// if txData[0].CheckInorOut() == BuyIn {
-		// 	flagofs3++
-		// 	// return a AbitPs of BuyIn
-		// } else {
-		// 	flagofs3--
-		// 	// return a AbitPs of BuyOut
-		// }
-		tempflag := flagofs3
-		if flagofs3 == 0 {
-			if txData[0].CheckInorOut() == BuyIn {
-				//flagofs3++
-				tempflag = flagofs3 + 1
-				// return a AbitPs of BuyIn
-				log.Println("BuyIn")
-				postArbitrageParam(backendClient, ArbitrageParem{
-					Gasprice: txData[0].Gasprice,
-					InOrOut:  BuyIn,
-				})
-			} else {
-				log.Println("We need a BuyIn,but get a BuyOut")
-			}
-			// } else {
-			// 	//flagofs3--
-			// 	tempflag = flagofs3 - 1
-			// 	// return a AbitPs of BuyOut
-			// 	//postData.Add("Gasprice", BigIntToFloat(txData[0].Gasprice).String())
-			// 	log.Println("Butout")
-			// 	postData := ur.Values{}
-			// 	postData.Add("Gasprice", Gasstring)
-			// 	postData.Add("InOrOut", "false")
-			// 	resp, err := http.Post("http://localhost:8081/arbitrage", "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
-			// 	if err != nil {
-			// 		log.Println(err)
-			// 	}
-			// 	log.Println(resp)
-			// }
-		} else if flagofs3 == 1 {
-			if txData[0].CheckInorOut() == BuyOut {
-				//flagofs3--
-				tempflag = flagofs3 - 1
-				// return a AbtisPs of BuyOut
-				//postData.Add("Gasprice", BigIntToFloat(txData[0].Gasprice).String())
-				log.Println("Butout")
-				postArbitrageParam(backendClient, ArbitrageParem{
-					Gasprice: txData[0].Gasprice,
-					InOrOut:  BuyOut,
-				})
-				time.Sleep(time.Second * 10)
-			} else {
-				log.Println("We need a BuyOut,but get a BuyIn")
-			}
-			// } else if flagofs3 == -1 {
-			// 	if txData[0].CheckInorOut() == BuyIn {
-			// 		//flagofs3++
-			// 		tempflag = flagofs3 + 1
-			// 		// return a AbitsPs of BuyInS
-			// 		//postData.Add("Gasprice", BigIntToFloat(txData[0].Gasprice).String())
-			// 		postData := ur.Values{}
-			// 		postData.Add("Gasprice", Gasstring)
-			// 		postData.Add("InOrOut", "true")
-			// 		log.Println("buyin")
-			// 		resp, err := http.Post("http://localhost:8081/arbitrage", "application/x-www-form-urlencoded", strings.NewReader(postData.Encode()))
-			// 		if err != nil {
-			// 			log.Println(err)
-			// 		}
-			// 		log.Println(resp)
-			// 	}
-		}
-		flagofs3 = tempflag
+	var params []ArbitrageParem
+	var strategySleep time.Duration
+	listenerState, params, strategySleep = runListenerStrategy(config, listenerState, txData)
+	for _, param := range params {
+		postArbitrageParam(backendClient, param)
+	}
+	if strategySleep > 0 {
+		time.Sleep(strategySleep)
 	}
 	time.Sleep(time.Second * 20)
 	goto NEXT_BLOCK
