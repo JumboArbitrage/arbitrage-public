@@ -9,6 +9,9 @@
 
 当前默认模式是 dry-run。dry-run 只生成脱敏执行计划，不签名、不发链上交易。
 
+更完整的项目结构、安全边界、已验证内容和未验证内容见 `docs/project-guide.md`。
+本文件保留为简洁的中文操作说明。
+
 ## 隔离环境
 
 统一使用 Docker Compose 提供 Node + Go 隔离环境：
@@ -87,6 +90,15 @@ router 使用配置的 test token。后端不会自动发送 approve 交易。
 
 `sdk/scripts` 下的历史 shell 脚本已经归档。请使用 Docker Compose 入口，
 不要直接运行这些脚本。
+
+## 当前边界
+
+当前支持的运行路径仍然是 active Express 后端和 Go listener。TradeInit browser
+demo 仍然是保留的历史文件，不是 active frontend。暂时不移动或整理它，是为了避免
+改变历史引用路径，同时也避免制造没有测试收益的结构风险。
+
+本地 EVM 集成测试只验证后端在 Anvil mock contracts 上的交易构造、签名、提交和
+approve 行为。它不证明真实公链兼容性，也不证明套利收益。
 
 ## 测试
 

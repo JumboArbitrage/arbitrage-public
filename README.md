@@ -10,6 +10,19 @@ sends transactions to a chain. Live chain writes require both:
 - `LIVE_TRADING=1`
 - the Docker Compose `live` profile
 
+## Documentation Map
+
+- [Project guide](docs/project-guide.md): long-form overview of the repository,
+  component boundaries, safety model, tested guarantees, and remaining limits.
+- [Project notes](doc/Doc.md): concise English notes for setup, dry-run, live
+  mode, and tests.
+- [中文项目说明](doc/Doc_ch.md): Chinese companion notes for the same operational
+  workflow.
+- [Security policy](SECURITY.md): secret handling, live-mode warnings, and local
+  safety checks.
+- [Refactor notes](docs/refactor-notes.md): intentionally preserved debt and
+  recommended next checkpoints.
+
 ## Current Limits
 
 - The historical prototype targeted Rinkeby and Uniswap V2. Rinkeby and Goerli

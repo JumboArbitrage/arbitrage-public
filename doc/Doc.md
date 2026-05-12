@@ -11,6 +11,10 @@ This SDK is an Ethereum arbitrage prototype. It has two main parts:
 The current safe default is dry-run. Dry-run builds a redacted execution plan and
 does not sign or submit transactions.
 
+For a longer explanation of the repository structure, tested guarantees, and
+remaining limits, see `docs/project-guide.md`. This file stays as the concise
+operational note.
+
 ## Environment
 
 Use Docker Compose for a unified isolated Node + Go environment:
@@ -95,6 +99,17 @@ transactions.
 
 Historical shell scripts under `sdk/scripts` are archived. Use Docker Compose
 entrypoints instead of running those scripts directly.
+
+## Current Boundaries
+
+The active backend and Go listener are still the only supported runtime path.
+The TradeInit browser demo remains a preserved historical artifact, not an
+active frontend. Keeping it in place is intentional: moving or reshaping it
+would create risk without proving a safer runtime behavior.
+
+The local EVM integration test validates backend transaction construction,
+signing, submission, and approval behavior only against Anvil mock contracts. It
+does not prove real public-network compatibility or arbitrage profitability.
 
 ## Tests
 

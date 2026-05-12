@@ -16,6 +16,18 @@ requests require the buy-out account to approve the configured router for the
 configured test token before live use; this repository does not automatically
 send approval transactions.
 
+## Tested Safety Boundaries
+
+The default test suite is designed to prove the safe default, not trading
+profitability. It verifies that the dry-run path does not submit transactions,
+that obvious committed secrets are rejected, that archived TradeInit entrypoints
+stay non-active, and that local dependency state is kept outside the repository
+workspace.
+
+The optional local EVM integration profile verifies backend signing and
+submission only on a local Anvil chain with mock contracts and public test
+accounts. It is not evidence that live mode is safe on a real public network.
+
 ## Secrets
 
 Do not commit:
