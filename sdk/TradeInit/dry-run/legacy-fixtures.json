@@ -1,106 +1,48 @@
 {
-  "main_0": {
-    "legacyFile": "sdk/TradeInit/loal-version/js/main_0.js",
-    "accountStart": 2,
-    "accountEndExclusive": 17,
-    "directionMode": "all-buy",
-    "gasPricesWei": [
-      "1000001000",
-      "1002005000",
-      "1012003000",
-      "10001000000",
-      "10082050000",
-      "10400060000",
-      "10800070000",
-      "11001040000",
-      "100000400000",
-      "100500400000",
-      "115000800000",
-      "155020400000",
-      "175040400000",
-      "1050604000000",
-      "1050804000000",
-      "1052004000000",
-      "1054004000000",
-      "1057004000000"
-    ]
-  },
-  "main_1": {
-    "legacyFile": "sdk/TradeInit/loal-version/js/main_1.js",
-    "accountStart": 4,
-    "accountEndExclusive": 8,
-    "directionMode": "all-buy",
-    "gasPricesWei": [
-      "1000001000",
-      "1002005000",
-      "1012003000",
-      "10001000000",
-      "10082050000",
-      "10400060000",
-      "10800070000",
-      "11001040000",
-      "100000400000",
-      "100500400000",
-      "115000800000",
-      "155020400000",
-      "175040400000",
-      "1050604000000",
-      "1050804000000",
-      "1052004000000",
-      "1054004000000",
-      "1057004000000"
-    ]
-  },
-  "main2_0": {
-    "legacyFile": "sdk/TradeInit/loal-version/js/main2_0.js",
-    "accountStart": 2,
-    "accountEndExclusive": 7,
-    "directionMode": "edge-sell",
-    "gasPricesWei": [
-      "1000001000",
-      "1002005000",
-      "1012003000",
-      "10001000000",
-      "10082050000",
-      "10400060000",
-      "10800070000",
-      "11001040000",
-      "100000400000",
-      "100500400000",
-      "115000800000",
-      "155020400000",
-      "175040400000",
-      "1050604000000",
-      "1050804000000",
-      "1052004000000",
-      "1054004000000",
-      "1057004000000"
-    ]
-  },
-  "main3_1": {
-    "legacyFile": "sdk/TradeInit/loal-version/js/main3_1.js",
-    "accountStart": 6,
-    "accountEndExclusive": 10,
-    "directionMode": "last-sell",
-    "gasPricesWei": [
-      "1000001000",
-      "1002005000",
-      "1012003000",
-      "10001000000",
-      "10082050000",
-      "10400060000",
-      "10800070000",
-      "11001040000",
-      "100000400000",
-      "100500400000",
-      "115000800000",
-      "155020400000",
-      "175040400000",
-      "1050604000000",
-      "1050804000000",
-      "1052004000000",
-      "1054004000000",
-      "1057004000000"
-    ]
+  "legacyGasPricesWei": [
+    "1000001000",
+    "1002005000",
+    "1012003000",
+    "10001000000",
+    "10082050000",
+    "10400060000",
+    "10800070000",
+    "11001040000",
+    "100000400000",
+    "100500400000",
+    "115000800000",
+    "155020400000",
+    "175040400000",
+    "1050604000000",
+    "1050804000000",
+    "1052004000000",
+    "1054004000000",
+    "1057004000000"
+  ],
+  "fixtures": {
+    "main_0": {
+      "legacyFile": "sdk/TradeInit/loal-version/js/main_0.js",
+      "accountStart": 2,
+      "accountEndExclusive": 17,
+      "directionMode": "all-buy"
+    },
+    "main_1": {
+      "legacyFile": "sdk/TradeInit/loal-version/js/main_1.js",
+      "accountStart": 4,
+      "accountEndExclusive": 8,
+      "directionMode": "all-buy"
+    },
+    "main2_0": {
+      "legacyFile": "sdk/TradeInit/loal-version/js/main2_0.js",
+      "accountStart": 2,
+      "accountEndExclusive": 7,
+      "directionMode": "edge-sell"
+    },
+    "main3_1": {
+      "legacyFile": "sdk/TradeInit/loal-version/js/main3_1.js",
+      "accountStart": 6,
+      "accountEndExclusive": 10,
+      "directionMode": "last-sell"
+    }
   }
 }

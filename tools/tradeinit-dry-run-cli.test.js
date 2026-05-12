@@ -48,50 +48,85 @@ function assertCliFails(args, pattern) {
 }
 
 const fixtures = loadFixtures();
+const legacyGasPricesWei = [
+  "1000001000",
+  "1002005000",
+  "1012003000",
+  "10001000000",
+  "10082050000",
+  "10400060000",
+  "10800070000",
+  "11001040000",
+  "100000400000",
+  "100500400000",
+  "115000800000",
+  "155020400000",
+  "175040400000",
+  "1050604000000",
+  "1050804000000",
+  "1052004000000",
+  "1054004000000",
+  "1057004000000",
+];
 
-const main0 = buildPlan(optionsWithFixture("main_0"), fixtures);
-assertPlanSafety(main0);
-assert.strictEqual(main0.legacyFile, "sdk/TradeInit/loal-version/js/main_0.js");
-assert.deepStrictEqual(main0.accountRange, { start: 2, endExclusive: 17 });
-assert.deepStrictEqual(directions(main0), Array(15).fill("buy"));
-assert.deepStrictEqual(
-  main0.trades.slice(0, 3).map((trade) => trade.gasPriceWei),
-  ["1000001000", "1002005000", "1012003000"],
-);
-assert.strictEqual(main0.summary.buy, 15);
-assert.strictEqual(main0.summary.sell, 0);
+assert.deepStrictEqual(fixtures.legacyGasPricesWei, legacyGasPricesWei);
+for (const [name, fixture] of Object.entries(fixtures.fixtures)) {
+  assert.ok(!Object.hasOwn(fixture, "gasPricesWei"), `${name} must use shared gas prices`);
+}
 
-const main1 = buildPlan(optionsWithFixture("main_1"), fixtures);
-assertPlanSafety(main1);
-assert.strictEqual(main1.legacyFile, "sdk/TradeInit/loal-version/js/main_1.js");
-assert.deepStrictEqual(main1.accountRange, { start: 4, endExclusive: 8 });
-assert.deepStrictEqual(directions(main1), Array(4).fill("buy"));
-assert.deepStrictEqual(
-  main1.trades.slice(0, 3).map((trade) => trade.gasPriceWei),
-  ["1000001000", "1002005000", "1012003000"],
-);
-assert.strictEqual(main1.trades[0].legacyAccountIndex, 4);
-assert.strictEqual(main1.trades[3].legacyAccountIndex, 7);
-assert.strictEqual(main1.summary.buy, 4);
-assert.strictEqual(main1.summary.sell, 0);
+function planSummary(name) {
+  const plan = buildPlan(optionsWithFixture(name), fixtures);
+  assertPlanSafety(plan);
+  return {
+    source: plan.source,
+    legacyFile: plan.legacyFile,
+    accountRange: plan.accountRange,
+    directions: directions(plan),
+    gasPriceWei: plan.trades.map((trade) => trade.gasPriceWei),
+    legacyAccountIndices: plan.trades.map((trade) => trade.legacyAccountIndex),
+    summary: plan.summary,
+  };
+}
 
-const main20 = buildPlan(optionsWithFixture("main2_0"), fixtures);
-assertPlanSafety(main20);
-assert.deepStrictEqual(main20.accountRange, { start: 2, endExclusive: 7 });
-assert.deepStrictEqual(directions(main20), ["sell", "buy", "buy", "buy", "sell"]);
-assert.strictEqual(main20.trades[0].legacyAccountIndex, 2);
-assert.strictEqual(main20.trades[4].legacyAccountIndex, 6);
-assert.strictEqual(main20.summary.buy, 3);
-assert.strictEqual(main20.summary.sell, 2);
+assert.deepStrictEqual(planSummary("main_0"), {
+  source: "legacy-fixture:main_0",
+  legacyFile: "sdk/TradeInit/loal-version/js/main_0.js",
+  accountRange: { start: 2, endExclusive: 17 },
+  directions: Array(15).fill("buy"),
+  gasPriceWei: legacyGasPricesWei.slice(0, 15),
+  legacyAccountIndices: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+  summary: { total: 15, buy: 15, sell: 0 },
+});
 
-const main31 = buildPlan(optionsWithFixture("main3_1"), fixtures);
-assertPlanSafety(main31);
-assert.deepStrictEqual(main31.accountRange, { start: 6, endExclusive: 10 });
-assert.deepStrictEqual(directions(main31), ["buy", "buy", "buy", "sell"]);
-assert.strictEqual(main31.trades[0].legacyAccountIndex, 6);
-assert.strictEqual(main31.trades[3].legacyAccountIndex, 9);
-assert.strictEqual(main31.summary.buy, 3);
-assert.strictEqual(main31.summary.sell, 1);
+assert.deepStrictEqual(planSummary("main_1"), {
+  source: "legacy-fixture:main_1",
+  legacyFile: "sdk/TradeInit/loal-version/js/main_1.js",
+  accountRange: { start: 4, endExclusive: 8 },
+  directions: Array(4).fill("buy"),
+  gasPriceWei: legacyGasPricesWei.slice(0, 4),
+  legacyAccountIndices: [4, 5, 6, 7],
+  summary: { total: 4, buy: 4, sell: 0 },
+});
+
+assert.deepStrictEqual(planSummary("main2_0"), {
+  source: "legacy-fixture:main2_0",
+  legacyFile: "sdk/TradeInit/loal-version/js/main2_0.js",
+  accountRange: { start: 2, endExclusive: 7 },
+  directions: ["sell", "buy", "buy", "buy", "sell"],
+  gasPriceWei: legacyGasPricesWei.slice(0, 5),
+  legacyAccountIndices: [2, 3, 4, 5, 6],
+  summary: { total: 5, buy: 3, sell: 2 },
+});
+
+assert.deepStrictEqual(planSummary("main3_1"), {
+  source: "legacy-fixture:main3_1",
+  legacyFile: "sdk/TradeInit/loal-version/js/main3_1.js",
+  accountRange: { start: 6, endExclusive: 10 },
+  directions: ["buy", "buy", "buy", "sell"],
+  gasPriceWei: legacyGasPricesWei.slice(0, 4),
+  legacyAccountIndices: [6, 7, 8, 9],
+  summary: { total: 4, buy: 3, sell: 1 },
+});
 
 const explicitPlan = buildPlan({
   ...baseOptions,

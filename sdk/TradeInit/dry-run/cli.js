@@ -110,7 +110,7 @@ function shapeFromOptions(options, fixtures) {
     if (mixedOption) {
       throw new Error(`--fixture cannot be combined with --${mixedOption}`);
     }
-    const fixture = fixtures[options.fixture];
+    const fixture = fixtures.fixtures[options.fixture];
     if (!fixture) {
       throw new Error(`unknown fixture: ${options.fixture}`);
     }
@@ -120,7 +120,7 @@ function shapeFromOptions(options, fixtures) {
       accountStart: fixture.accountStart,
       accountEndExclusive: fixture.accountEndExclusive,
       directionMode: fixture.directionMode,
-      gasPricesWei: fixture.gasPricesWei,
+      gasPricesWei: fixtures.legacyGasPricesWei,
     };
   }
 
